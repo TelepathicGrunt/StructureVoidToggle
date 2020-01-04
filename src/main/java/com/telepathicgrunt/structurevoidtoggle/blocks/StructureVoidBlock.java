@@ -15,25 +15,29 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class StructureVoidBlock extends Block
 {
+	//public so we can access and change the hitbox
 	public static VoxelShape SHAPE = Block.makeCuboidShape(5.0D, 5.0D, 5.0D, 11.0D, 11.0D, 11.0D);
 
+	/*
+	 * Rest of this code is exactly like Structure Void to cause no issues or weird behavior since we are registry replacing it.
+	 * Thus people will be expecting this block to behave exactly like the vanilla block minus the hitbox changing.
+	 */
 
 	protected StructureVoidBlock()
 	{
 		super(Block.Properties.create(Material.STRUCTURE_VOID).doesNotBlockMovement().noDrops());
 	}
 
+	
 	public BlockRenderType getRenderType(BlockState state)
 	{
 		return BlockRenderType.INVISIBLE;
 	}
 
-
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
 	{
-		return SHAPE;
+		return SHAPE; //Uses the current hitbox we have set
 	}
-
 
 	@OnlyIn(Dist.CLIENT)
 	public float func_220080_a(BlockState state, IBlockReader worldIn, BlockPos pos)
@@ -41,10 +45,6 @@ public class StructureVoidBlock extends Block
 		return 1.0F;
 	}
 
-
-	/**
-	 * @deprecated call via {@link IBlockState#getMobilityFlag()} whenever possible. Implementing/overriding is fine.
-	 */
 	public PushReaction getPushReaction(BlockState state)
 	{
 		return PushReaction.DESTROY;

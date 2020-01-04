@@ -40,9 +40,11 @@ public class ToggleBehavior
 			return values()[ordinal() + 1];
 		}
 	}
+	
+	//the current mode for the structure void block for the current client
 	private static STRUCTURE_BLOCK_MODE mode = STRUCTURE_BLOCK_MODE.SMALL_HITBOX;
 	
-	//keybind for switching mod
+	//keybind for switching modes. 96 is the keycode for backtick `
 	public static final KeyBinding keyBindStructureVoidToggle = new KeyBinding("key.structure_void", 96, "key.categories.misc");
 
 	
@@ -61,7 +63,7 @@ public class ToggleBehavior
 		@SubscribeEvent
 		public static void onEvent(InputEvent.KeyInputEvent event)
 		{
-			//Changes the structure void mode globally
+			//Changes the structure void mode
 			if (keyBindStructureVoidToggle.isPressed())
 			{
 				mode = mode.next();
@@ -115,26 +117,28 @@ public class ToggleBehavior
 	        if(mode == STRUCTURE_BLOCK_MODE.AUTO_PLACING) 
 	        {
 				if ((event.getMovementInput().forwardKeyDown ||
-					event.getMovementInput().leftKeyDown ||
-					event.getMovementInput().rightKeyDown ||
-					event.getMovementInput().backKeyDown) ||
+					 event.getMovementInput().leftKeyDown ||
+					 event.getMovementInput().rightKeyDown ||
+					 event.getMovementInput().backKeyDown) ||
 					(player.isCreative() && 
-					  (event.getMovementInput().jump ||
-					   event.getMovementInput().field_228350_h_)
-					))
+						  (event.getMovementInput().jump ||
+						   event.getMovementInput().field_228350_h_)))
 				{
-					//replaces block at feet.
-					//move player pos up .3 blocks so blocks like dirt roads or slabs won't get replaced since it lower the player.
+					//move player pos up .99 blocks so blocks like dirt roads or slabs won't get replaced since it lower the player.
 					BlockPos playerPosition = new BlockPos(player.func_226277_ct_(), player.func_226278_cu_()+0.99f, player.func_226281_cx_());
-					MessageHandler.BlockPlacingMessage.sendToServer(playerPosition, BlocksInit.STRUCTURE_VOID.get());
+					
+					//replaces block at feet. (send block replacing packet to server)
+					MessageHandler.BlockPlacingPacket.sendToServer(playerPosition, BlocksInit.STRUCTURE_VOID.get());
+					
 					
 					//crouching makes it not place block at eye level.
-					if(!player.isCrouching()) {
-						//raised one and a half block so walking on slabs won't replace the block above your head.
+					if(!player.isCrouching()) 
+					{
+						//raised almost one and a half block so walking on slabs won't replace the block above your head.
 						playerPosition = new BlockPos(player.func_226277_ct_(), player.func_226278_cu_()+1.49f, player.func_226281_cx_());
 						
-						//replaced block at eye level
-						MessageHandler.BlockPlacingMessage.sendToServer(playerPosition, BlocksInit.STRUCTURE_VOID.get());
+						//replaced block at eye level (send block replacing packet to server)
+						MessageHandler.BlockPlacingPacket.sendToServer(playerPosition, BlocksInit.STRUCTURE_VOID.get());
 					}
 		        }
 			}

@@ -30,7 +30,6 @@ public class StructureVoidToggleMain
 	public static final String MODID = "structure_void_toggle";
 
 
-
 	public StructureVoidToggleMain()
 	{
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
@@ -42,15 +41,13 @@ public class StructureVoidToggleMain
 
 	private void setup(final FMLCommonSetupEvent event)
 	{
+		//set up packet handling between client and server for auto-placing mode
 		MessageHandler.init();
 	}
 
 
 	private void doClientStuff(final FMLClientSetupEvent event)
 	{
-		//register backtick character to vanilla.
-		//InputMappings.Type.registerInput(InputMappings.Type.KEYSYM, "key.keyboard.192", 192);
-		
 		//add our own keybind for backtick (`) for toggling structure void hitboxes to vanilla
 		KeyBinding[] kb = Minecraft.getInstance().gameSettings.keyBindings;
         List<KeyBinding> arrlist = new ArrayList<KeyBinding>(Arrays.asList(kb)); 
@@ -58,7 +55,7 @@ public class StructureVoidToggleMain
         Minecraft.getInstance().gameSettings.keyBindings = arrlist.toArray(kb);
 	}
 
-	// Event bus for receiving Registry Events)
+	
 	@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 	public static class RegistryEvents
 	{
