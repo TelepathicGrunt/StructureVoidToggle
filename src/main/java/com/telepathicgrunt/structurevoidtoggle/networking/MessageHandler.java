@@ -58,7 +58,7 @@ public class MessageHandler
 
 		public static BlockPlacingMessage parse(final PacketBuffer buf)
 		{
-			return new BlockPlacingMessage(buf.readBlockPos(), buf.readString());
+			return new BlockPlacingMessage(buf.readBlockPos(), buf.readString(24));
 		}
 
 

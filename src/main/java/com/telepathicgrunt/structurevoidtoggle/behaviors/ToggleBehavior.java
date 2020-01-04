@@ -47,7 +47,7 @@ public class ToggleBehavior
 
 	
 	
-	@Mod.EventBusSubscriber(modid = StructureVoidToggleMain.MODID)
+	@Mod.EventBusSubscriber(modid = StructureVoidToggleMain.MODID, value = { Dist.CLIENT })
 	private static class ForgeEvents
 	{
 		
@@ -111,18 +111,18 @@ public class ToggleBehavior
 		public static void sneakBoost(InputUpdateEvent event)
 		{
 			PlayerEntity player = event.getPlayer();
-			
-			if ((event.getMovementInput().forwardKeyDown ||
-				event.getMovementInput().leftKeyDown ||
-				event.getMovementInput().rightKeyDown ||
-				event.getMovementInput().backKeyDown) ||
-				(player.isCreative() && 
-				  (event.getMovementInput().jump ||
-				   event.getMovementInput().field_228350_h_)
-				))
-			{
-		        if(mode == STRUCTURE_BLOCK_MODE.AUTO_PLACING) 
-		        {
+
+	        if(mode == STRUCTURE_BLOCK_MODE.AUTO_PLACING) 
+	        {
+				if ((event.getMovementInput().forwardKeyDown ||
+					event.getMovementInput().leftKeyDown ||
+					event.getMovementInput().rightKeyDown ||
+					event.getMovementInput().backKeyDown) ||
+					(player.isCreative() && 
+					  (event.getMovementInput().jump ||
+					   event.getMovementInput().field_228350_h_)
+					))
+				{
 					//replaces block at feet.
 					//move player pos up .3 blocks so blocks like dirt roads or slabs won't get replaced since it lower the player.
 					BlockPos playerPosition = new BlockPos(player.func_226277_ct_(), player.func_226278_cu_()+0.99f, player.func_226281_cx_());
