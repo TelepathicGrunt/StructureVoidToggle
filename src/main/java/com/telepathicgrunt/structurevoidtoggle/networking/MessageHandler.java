@@ -22,7 +22,7 @@ public class MessageHandler
 	private static final String PROTOCOL_VERSION = "1";
 	public static final SimpleChannel DEFAULT_CHANNEL = NetworkRegistry.newSimpleChannel(
 																			new ResourceLocation(StructureVoidToggleMain.MODID, "networking"), 
-																			() -> PROTOCOL_VERSION,PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals
+																			() -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals
 																		);
 
 	/*
