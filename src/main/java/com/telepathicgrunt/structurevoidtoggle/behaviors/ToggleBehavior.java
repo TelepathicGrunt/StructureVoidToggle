@@ -26,17 +26,16 @@ public class ToggleBehavior
 		NO_HITBOX, 
 		SMALL_HITBOX, 
 		FULL_HITBOX,
-		AUTO_PLACING{
-			@Override
-			public STRUCTURE_BLOCK_MODE next()
-			{
-				return NO_HITBOX; // see below for options for this line
-			};
-		};
+		AUTO_PLACING;
 
 		public STRUCTURE_BLOCK_MODE next()
 		{
-			// No bounds checking required here, because the last instance overrides
+			//loop back to start if on last enum
+			if(ordinal() + 1 == values().length)
+			{
+				return values()[0];
+			}
+			
 			return values()[ordinal() + 1];
 		}
 	}
