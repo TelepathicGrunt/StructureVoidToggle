@@ -1,5 +1,5 @@
     Structure Void Toggle
-    Made for Minecraft v.1.15.1
+    Made for Minecraft v.1.16.5
     Created by TelepathicGrunt
 
 Hello! I hope you like this short and simple mod!
@@ -12,6 +12,11 @@ First created on 1/2/2020
 ------------------------------------------------
        | Structure Void Toggle changelog |
        
+    (V.2.0.0 Changes) (1.16.4 Minecraft)
+       
+    Major Change: 
+·ported to fabric 1.16.5
+ 
        
     (V.1.0.0 Changes) (1.15.1 Minecraft)
     

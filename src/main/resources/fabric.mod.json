@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "structure_void_toggle",
+  "version": "${version}",
+
+  "name": "Structure Void Toggle",
+  "description": "Toggle the void!",
+  "authors": [
+    "TelepathicGrunt"
+  ],
+  "contact": {},
+
+  "license": "MIT",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.telepathicgrunt.structurevoidtoggle.StructureVoidToggleMain"
+    ],
+    "client": [
+      "com.telepathicgrunt.structurevoidtoggle.StructureVoidToggleClient"
+    ]
+  },
+  "mixins": [
+    "structure_void_toggle.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.10.6",
+    "minecraft": ">=1.16.2",
+    "fabric": ">=0.25.0"
+  }
+}
