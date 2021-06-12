@@ -1,12 +1,12 @@
 package com.telepathicgrunt.structurevoidtoggle.behaviors;
 
 import com.telepathicgrunt.structurevoidtoggle.mixin.StructureVoidBlockAccessor;
-import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.LiteralText;
-import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 public class ToggleBehavior
@@ -19,7 +19,7 @@ public class ToggleBehavior
 
 		public STRUCTURE_BLOCK_MODE next()
 		{
-			//loop back to start if on last enum
+			// Loop back to start if on last enum
 			if(ordinal() + 1 == values().length)
 			{
 				return values()[0];
@@ -29,12 +29,12 @@ public class ToggleBehavior
 		}
 	}
 	
-	//the current mode for the structure void block for the current client
+	// The current mode for the structure void block for the current client
 	public static STRUCTURE_BLOCK_MODE MODE = STRUCTURE_BLOCK_MODE.SMALL_HITBOX;
 	
-	//keybind for switching modes. 96 is the keycode for backtick `
-	public static final FabricKeyBinding keyBindStructureVoidToggle =  FabricKeyBinding.Builder.create(
-			new Identifier("key.structure_void"), InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_GRAVE_ACCENT, "key.categories.misc").build();
+	// Keybind for switching modes. 96 is the keycode for backtick `
+	public static final KeyBinding KEY_BIND_STRUCTURE_VOID_TOGGLE =  new KeyBinding(
+			"key.structure_void", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_GRAVE_ACCENT, "key.categories.misc");
 
 	/*
 	 * Switches between modes when backtick is pressed.
@@ -44,28 +44,26 @@ public class ToggleBehavior
 	 * block that entities can't touch won't cause issues. In theory.
 	 */
 	public static void toggle(int key) {
-		//Changes the structure void mode
-		if (keyBindStructureVoidToggle.isPressed()) {
+		// Changes the structure void mode
+		if (KEY_BIND_STRUCTURE_VOID_TOGGLE.isPressed()) {
 			MODE = MODE.next();
+			ClientPlayerEntity player  = MinecraftClient.getInstance().player;
+			if(player == null) return;
 
 			switch (MODE) {
-				case NO_HITBOX: {
-					MinecraftClient.getInstance().player.sendMessage(new LiteralText("Structure Void Toggle: No hitbox set."), true);
+				case NO_HITBOX -> {
+					player.sendMessage(new LiteralText("Structure Void Toggle: No hitbox set."), true);
 					StructureVoidBlockAccessor.setSHAPE(Block.createCuboidShape(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D));
-					break;
 				}
-				case SMALL_HITBOX: {
-					MinecraftClient.getInstance().player.sendMessage(new LiteralText("Structure Void Toggle: Small hitbox set."), true);
+				case SMALL_HITBOX -> {
+					player.sendMessage(new LiteralText("Structure Void Toggle: Small hitbox set."), true);
 					StructureVoidBlockAccessor.setSHAPE(Block.createCuboidShape(5.0D, 5.0D, 5.0D, 11.0D, 11.0D, 11.0D));
-					break;
 				}
-				case FULL_HITBOX: {
-					MinecraftClient.getInstance().player.sendMessage(new LiteralText("Structure Void Toggle: Full hitbox set."), true);
+				case FULL_HITBOX -> {
+					player.sendMessage(new LiteralText("Structure Void Toggle: Full hitbox set."), true);
 					StructureVoidBlockAccessor.setSHAPE(Block.createCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D));
-					break;
 				}
-				default: {
-					break;
+				default -> {
 				}
 			}
 		}
