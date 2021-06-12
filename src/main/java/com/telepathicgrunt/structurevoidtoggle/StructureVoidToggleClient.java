@@ -1,17 +1,11 @@
 package com.telepathicgrunt.structurevoidtoggle;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 
-import static com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior.KEY_BIND_STRUCTURE_VOID_TOGGLE;
+public class StructureVoidToggleClient {
 
-@Environment(EnvType.CLIENT)
-public class StructureVoidToggleClient implements ClientModInitializer {
-
-    @Override
-    public void onInitializeClient() {
-        KeyBindingHelper.registerKeyBinding(KEY_BIND_STRUCTURE_VOID_TOGGLE);
+    public static void onInitializeClient() {
+        ClientRegistry.registerKeyBinding(ToggleBehavior.KEY_BIND_STRUCTURE_VOID_TOGGLE);
     }
 }

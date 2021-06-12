@@ -1,0 +1,11 @@
+modLoader="javafml" #mandatory
+loaderVersion="[36,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+license="MIT License"
+
+[[mods]] #mandatory
+modId="structure_void_toggle" #mandatory
+version="${version}" #mandatory
+displayName="Structure Void Toggle" #mandatory
+displayURL="https://www.curseforge.com/minecraft/mc-mods/structure-void-toggle"
+authors="TelepathicGrunt"
+description='''Make structure void less annoying to build with'''
