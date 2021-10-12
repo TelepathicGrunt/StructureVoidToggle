@@ -7,5 +7,6 @@ public class StructureVoidToggleClient {
 
     public static void onInitializeClient() {
         ClientRegistry.registerKeyBinding(ToggleBehavior.KEY_BIND_STRUCTURE_VOID_TOGGLE);
+        ClientRegistry.registerKeyBinding(ToggleBehavior.KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE);
     }
 }
