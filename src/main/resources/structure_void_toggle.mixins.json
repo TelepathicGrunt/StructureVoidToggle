@@ -8,6 +8,7 @@
     "StructureVoidBlockAccessor"
   ],
   "client": [
+    "client.StructureTileEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
