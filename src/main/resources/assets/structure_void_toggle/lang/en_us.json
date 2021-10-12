@@ -1,3 +1,4 @@
 {
-  "key.minecraft.key.structure_void": "Structure Void Toggle"
+  "key.structure_void": "Structure Void Toggle",
+  "key.structure_void_render": "Structure Void Render Toggle"
 }
