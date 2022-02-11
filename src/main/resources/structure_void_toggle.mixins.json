@@ -1,13 +1,13 @@
 {
   "required": true,
   "package": "com.telepathicgrunt.structurevoidtoggle.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "structure_void_toggle.refmap.json",
   "mixins": [
-    "KeyboardMixin",
     "StructureVoidBlockAccessor"
   ],
   "client": [
+    "KeyboardMixin",
     "client.StructureTileEntityRendererMixin"
   ],
   "injectors": {

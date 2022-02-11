@@ -1,11 +1,11 @@
 package com.telepathicgrunt.structurevoidtoggle.behaviors;
 
 import com.telepathicgrunt.structurevoidtoggle.mixin.StructureVoidBlockAccessor;
-import net.minecraft.block.Block;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.block.Block;
 import org.lwjgl.glfw.GLFW;
 
 public class ToggleBehavior
@@ -35,11 +35,11 @@ public class ToggleBehavior
 	public static boolean VISIBLE = true;
 	
 	// Keybind for switching hitbox modes. 96 is the keycode for backtick `
-	public static final KeyBinding KEY_BIND_STRUCTURE_VOID_TOGGLE = new KeyBinding(
+	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_TOGGLE = new KeyMapping(
 			"key.structure_void", GLFW.GLFW_KEY_GRAVE_ACCENT, "key.categories.misc");
 
 	// Keybind for switching render modes. INSERT by default
-	public static final KeyBinding KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE = new KeyBinding(
+	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE = new KeyMapping(
 			"key.structure_void_render", GLFW.GLFW_KEY_INSERT, "key.categories.misc"
 	);
 
@@ -64,20 +64,20 @@ public class ToggleBehavior
 	 */
 	private static void toggleHitbox() {
 		MODE = MODE.next();
-		ClientPlayerEntity player  = Minecraft.getInstance().player;
+		LocalPlayer player  = Minecraft.getInstance().player;
 		if(player == null) return;
 
 		switch (MODE) {
 			case NO_HITBOX :
-				player.displayClientMessage(new StringTextComponent("Structure Void Toggle: No hitbox set."), true);
+				player.displayClientMessage(new TextComponent("Structure Void Toggle: No hitbox set."), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D));
 				break;
 			case SMALL_HITBOX :
-				player.displayClientMessage(new StringTextComponent("Structure Void Toggle: Small hitbox set."), true);
+				player.displayClientMessage(new TextComponent("Structure Void Toggle: Small hitbox set."), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(5.0D, 5.0D, 5.0D, 11.0D, 11.0D, 11.0D));
 				break;
 			case FULL_HITBOX :
-				player.displayClientMessage(new StringTextComponent("Structure Void Toggle: Full hitbox set."), true);
+				player.displayClientMessage(new TextComponent("Structure Void Toggle: Full hitbox set."), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D));
 				break;
 			default :
@@ -90,13 +90,13 @@ public class ToggleBehavior
 	 */
 	private static void toggleRender() {
 		VISIBLE = !VISIBLE;
-		ClientPlayerEntity player  = Minecraft.getInstance().player;
+		LocalPlayer player  = Minecraft.getInstance().player;
 		if (player == null) return;
 
 		if (VISIBLE) {
-			player.displayClientMessage(new StringTextComponent("Structure Void Toggle: Visible."), true);
+			player.displayClientMessage(new TextComponent("Structure Void Toggle: Visible."), true);
 		} else {
-			player.displayClientMessage(new StringTextComponent("Structure Void Toggle: Invisible."), true);
+			player.displayClientMessage(new TextComponent("Structure Void Toggle: Invisible."), true);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package com.telepathicgrunt.structurevoidtoggle;
 
 import com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.client.ClientRegistry;
 
 public class StructureVoidToggleClient {
 

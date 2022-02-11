@@ -1,14 +1,14 @@
 package com.telepathicgrunt.structurevoidtoggle.mixin;
 
 import com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior;
-import net.minecraft.client.KeyboardListener;
+import net.minecraft.client.KeyboardHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(KeyboardListener.class)
+@Mixin(KeyboardHandler.class)
 public class KeyboardMixin {
 
     @Inject(method = "keyPress",
