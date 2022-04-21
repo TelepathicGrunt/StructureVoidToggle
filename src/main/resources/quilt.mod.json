@@ -17,7 +17,7 @@
     "intermediate_mappings": "net.fabricmc:intermediary",
     "entrypoints": {
       "init": "com.telepathicgrunt.structurevoidtoggle.StructureVoidToggleMain",
-      "client": "com.telepathicgrunt.structurevoidtoggle.StructureVoidToggleClient"
+      "client_init": "com.telepathicgrunt.structurevoidtoggle.StructureVoidToggleClient"
     },
     "depends": [
       {
