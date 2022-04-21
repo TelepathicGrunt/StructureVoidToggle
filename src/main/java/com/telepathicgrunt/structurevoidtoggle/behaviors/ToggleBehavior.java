@@ -1,27 +1,23 @@
 package com.telepathicgrunt.structurevoidtoggle.behaviors;
 
+import com.mojang.blaze3d.platform.InputUtil;
 import com.telepathicgrunt.structurevoidtoggle.mixin.StructureVoidBlockAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.option.KeyBind;
 import net.minecraft.text.LiteralText;
 import org.lwjgl.glfw.GLFW;
 
-public class ToggleBehavior
-{
-	public enum STRUCTURE_BLOCK_MODE
-	{
+public class ToggleBehavior {
+	public enum STRUCTURE_BLOCK_MODE {
 		NO_HITBOX, 
 		SMALL_HITBOX, 
 		FULL_HITBOX;
 
-		public STRUCTURE_BLOCK_MODE next()
-		{
+		public STRUCTURE_BLOCK_MODE next() {
 			// Loop back to start if on last enum
-			if(ordinal() + 1 == values().length)
-			{
+			if(ordinal() + 1 == values().length) {
 				return values()[0];
 			}
 			
@@ -32,10 +28,10 @@ public class ToggleBehavior
 	// The current mode for the structure void block for the current client
 	public static STRUCTURE_BLOCK_MODE MODE = STRUCTURE_BLOCK_MODE.SMALL_HITBOX;
 
-	public static final KeyBinding KEY_BIND_STRUCTURE_VOID_TOGGLE =  new KeyBinding(
+	public static final KeyBind KEY_BIND_STRUCTURE_VOID_TOGGLE =  new KeyBind(
 			"key.structure_void", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_GRAVE_ACCENT, "key.categories.misc");
 
-	public static final KeyBinding KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE =  new KeyBinding(
+	public static final KeyBind KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE =  new KeyBind(
 			"key.structure_void_render", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_INSERT, "key.categories.misc");
 
 	// The current mode for the structure void block rendering for the current client
@@ -96,7 +92,8 @@ public class ToggleBehavior
 
 		if (VISIBLE) {
 			player.sendMessage(new LiteralText("Structure Void Toggle: Visible."), true);
-		} else {
+		}
+		else {
 			player.sendMessage(new LiteralText("Structure Void Toggle: Invisible."), true);
 		}
 	}

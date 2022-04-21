@@ -1,7 +1,7 @@
 package com.telepathicgrunt.structurevoidtoggle.mixin;
 
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.option.KeyBind;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -10,5 +10,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface GameOptionsAccessor {
     @Mutable
     @Accessor
-    void setKeysAll(KeyBinding[] keysAll);
+    void setAllKeys(KeyBind[] keysAll);
 }

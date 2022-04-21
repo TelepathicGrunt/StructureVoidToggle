@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "com.telepathicgrunt",
+    "id": "structure_void_toggle",
+    "version": "${version}",
+    "metadata": {
+      "name": "Structure Void Toggle",
+      "description": "Toggle the void!",
+      "contributors": {
+        "Me!": "TelepathicGrunt"
+      },
+      "icon": " ",
+      "license": "MIT",
+      "contact": {}
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "entrypoints": {
+      "init": "com.telepathicgrunt.structurevoidtoggle.StructureVoidToggleMain",
+      "client": "com.telepathicgrunt.structurevoidtoggle.StructureVoidToggleClient"
+    },
+    "depends": [
+      {
+        "id": "quilt_loader",
+        "versions": ">=0.16.0-"
+      },
+      {
+        "id": "quilted_fabric_api",
+        "versions": ">=1.0.0-"
+      },
+      {
+        "id": "minecraft",
+        "versions": ">=1.18.2"
+      }
+    ]
+  },
+  "mixin": "structure_void_toggle.mixins.json"
+}
