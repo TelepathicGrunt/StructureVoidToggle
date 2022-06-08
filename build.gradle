@@ -74,7 +74,7 @@ task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge)
     mainFile.changelog = changelogText
     mainFile.changelogType = "markdown"
     mainFile.releaseType = "release"
-    mainFile.displayName = "Structure Void Toggle v${project.mod_version} (${project.mc_version} MC)"
+    mainFile.displayName = "Structure Void Toggle v${project.mod_version} (Forge)"
 }
 
 task checkForRefmap() {
