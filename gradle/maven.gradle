@@ -1,0 +1,47 @@
+jar.finalizedBy('reobfJar')
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+
+            pom {
+                name = 'StructureVoidToggle-Fabric'
+                description = 'Toggle Structure Void Hitboxes!'
+                url = 'https://github.com/TelepathicGrunt/StructureVoidToggle'
+
+                scm {
+                    connection = 'git:https://github.com/TelepathicGrunt/StructureVoidToggle.git'
+                    developerConnection = 'git:https://github.com/TelepathicGrunt/StructureVoidToggle.git'
+                    url = 'https://github.com/TelepathicGrunt/StructureVoidToggle'
+                }
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/TelepathicGrunt/StructureVoidToggle/blob/master/LICENSE.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'telepathic_grunt'
+                        name = 'TelepathicGrunt'
+                        email = 'asarnesespam@gmail.com'
+                    }
+                }
+            }
+
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri("https://nexus.resourcefulbees.com/repository/telepathicgrunt/")
+            credentials {
+                username "$System.env.MAVEN_USER"
+                password "$System.env.MAVEN_PASS"
+            }
+        }
+    }
+}

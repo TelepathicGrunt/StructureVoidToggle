@@ -4,7 +4,6 @@
   "package": "com.telepathicgrunt.structurevoidtoggle.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "GameOptionsAccessor",
     "StructureTileEntityRendererMixin",
     "StructureVoidBlockAccessor"
   ],

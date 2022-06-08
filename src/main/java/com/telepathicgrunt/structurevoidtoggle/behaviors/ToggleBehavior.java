@@ -6,7 +6,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.TranslatableTextContent;
 import org.lwjgl.glfw.GLFW;
 
 public class ToggleBehavior
@@ -70,15 +71,15 @@ public class ToggleBehavior
 
 		switch (MODE) {
 			case NO_HITBOX -> {
-				player.sendMessage(new LiteralText("Structure Void Toggle: No hitbox set."), true);
+				player.sendMessage(MutableText.of(new TranslatableTextContent("Structure Void Toggle: No hitbox set.")), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.createCuboidShape(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D));
 			}
 			case SMALL_HITBOX -> {
-				player.sendMessage(new LiteralText("Structure Void Toggle: Small hitbox set."), true);
+				player.sendMessage(MutableText.of(new TranslatableTextContent("Structure Void Toggle: Small hitbox set.")), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.createCuboidShape(5.0D, 5.0D, 5.0D, 11.0D, 11.0D, 11.0D));
 			}
 			case FULL_HITBOX -> {
-				player.sendMessage(new LiteralText("Structure Void Toggle: Full hitbox set."), true);
+				player.sendMessage(MutableText.of(new TranslatableTextContent("Structure Void Toggle: Full hitbox set.")), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.createCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D));
 			}
 			default -> {
@@ -95,9 +96,9 @@ public class ToggleBehavior
 		if (player == null) return;
 
 		if (VISIBLE) {
-			player.sendMessage(new LiteralText("Structure Void Toggle: Visible."), true);
+			player.sendMessage(MutableText.of(new TranslatableTextContent("Structure Void Toggle: Visible.")), true);
 		} else {
-			player.sendMessage(new LiteralText("Structure Void Toggle: Invisible."), true);
+			player.sendMessage(MutableText.of(new TranslatableTextContent("Structure Void Toggle: Invisible.")), true);
 		}
 	}
 }
