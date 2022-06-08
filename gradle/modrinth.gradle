@@ -20,7 +20,7 @@ task publishModrinth (type: TaskModrinthUpload){
     versionName = "Structure Void Toggle v${project.mod_version} Fabric"
     versionNumber = project.version + "_forge"
     versionType = "RELEASE"
-    uploadFile = jar
+    uploadFile = remapJar
     changelog = fileContents
     addGameVersion('1.19')
     addLoader('fabric')

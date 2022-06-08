@@ -1,9 +1,14 @@
-jar.finalizedBy('reobfJar')
+apply plugin: 'maven-publish'
+
+task apiJar(type: Jar, dependsOn: classes) {
+    from(sourceSets.main.output)
+    include 'structure_void_toggle/**'
+}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact jar
+            from components.java
 
             pom {
                 name = 'StructureVoidToggle-Fabric'
