@@ -4,23 +4,20 @@ import com.telepathicgrunt.structurevoidtoggle.mixin.StructureVoidBlockAccessor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.block.Block;
 import org.lwjgl.glfw.GLFW;
 
-public class ToggleBehavior
-{
-	public enum STRUCTURE_BLOCK_MODE
-	{
+public class ToggleBehavior {
+	public enum STRUCTURE_BLOCK_MODE {
 		NO_HITBOX,
 		SMALL_HITBOX,
 		FULL_HITBOX;
 
-		public STRUCTURE_BLOCK_MODE next()
-		{
+		public STRUCTURE_BLOCK_MODE next() {
 			// Loop back to start if on last enum
-			if(ordinal() + 1 == values().length)
-			{
+			if(ordinal() + 1 == values().length) {
 				return values()[0];
 			}
 
@@ -69,15 +66,15 @@ public class ToggleBehavior
 
 		switch (MODE) {
 			case NO_HITBOX :
-				player.displayClientMessage(new TextComponent("Structure Void Toggle: No hitbox set."), true);
+				player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: No hitbox set.")), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D));
 				break;
 			case SMALL_HITBOX :
-				player.displayClientMessage(new TextComponent("Structure Void Toggle: Small hitbox set."), true);
+				player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Small hitbox set.")), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(5.0D, 5.0D, 5.0D, 11.0D, 11.0D, 11.0D));
 				break;
 			case FULL_HITBOX :
-				player.displayClientMessage(new TextComponent("Structure Void Toggle: Full hitbox set."), true);
+				player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Full hitbox set.")), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D));
 				break;
 			default :
@@ -94,9 +91,10 @@ public class ToggleBehavior
 		if (player == null) return;
 
 		if (VISIBLE) {
-			player.displayClientMessage(new TextComponent("Structure Void Toggle: Visible."), true);
-		} else {
-			player.displayClientMessage(new TextComponent("Structure Void Toggle: Invisible."), true);
+			player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Visible.")), true);
+		}
+		else {
+			player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Invisible.")), true);
 		}
 	}
 }

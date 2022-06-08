@@ -9,7 +9,12 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath 'org.parchmentmc:librarian:1.+'
 		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath group: 'gradle.plugin.com.modrinth.minotaur', name: 'Minotaur', version: '1.2.1'
 	}
+}
+
+plugins {
+    id "net.darkhax.curseforgegradle" version "1.0.7"
 }
 
 apply plugin: 'net.minecraftforge.gradle'
@@ -25,7 +30,7 @@ archivesBaseName = "${modid}-forge"
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'parchment', version: "${parchment_version}-${mc_version}"
+    mappings channel: "official", version: "${mc_version}"
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
    
     runs {
@@ -51,22 +56,37 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
-jar {
-    manifest {
-        attributes([
-                "Specification-Title": "${modid}",
-                "Specification-Vendor": "TelepathicGrunt",
-                "Specification-Version": "1", // We are version 1 of ourselves
-                "Implementation-Title": project.name,
-                "Implementation-Version": "${mod_version}+${mc_version}",
-                "Implementation-Vendor" :"TelepathicGrunt",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs": "${modid}.mixins.json"
-        ])
-    }
-}
 
 mixin {
     add sourceSets.main, "${modid}.refmap.json"
 }
 
+apply from: 'gradle/processresources.gradle'
+apply from: 'gradle/manifest.gradle'
+apply from: 'gradle/maven.gradle'
+apply from: 'gradle/modrinth.gradle'
+task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    apiToken = "$System.env.CURSEFORGEKEY"
+    int projectId = 357304
+    String changelogText = new File("CHANGELOG.md").getText('UTF-8')
+
+    def mainFile = upload(projectId, jar)
+    mainFile.changelog = changelogText
+    mainFile.changelogType = "markdown"
+    mainFile.releaseType = "release"
+    mainFile.displayName = "Structure Void Toggle v${project.mod_version} (${project.mc_version} MC)"
+}
+
+task checkForRefmap() {
+    if (file("./build/libs/structure_void_toggle_forge-${project.mod_version}+${project.mc_version}.jar").exists()) {
+        assert zipTree("./build/libs/structure_void_toggle_forge-${project.mod_version}+${project.mc_version}.jar")
+                .matching { include "structure_void_toggle.refmap.json" }.getSingleFile() != null
+    }
+}
+
+task buildAndRelease{}
+tasks.checkForRefmap.mustRunAfter tasks.build
+tasks.publish.mustRunAfter tasks.checkForRefmap
+tasks.publishCurseForge.mustRunAfter tasks.publish
+tasks.publishModrinth.mustRunAfter tasks.publish
+tasks.buildAndRelease.dependsOn(tasks.build, tasks.checkForRefmap, tasks.publish, tasks.publishCurseForge, tasks.publishModrinth)
