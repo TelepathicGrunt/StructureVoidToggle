@@ -18,7 +18,7 @@ task publishModrinth (type: TaskModrinthUpload){
     token = "$System.env.MODRINTH"
     projectId = 'S1tbzJ6Y'
     versionName = "Structure Void Toggle v${project.mod_version} Fabric"
-    versionNumber = project.version + "_forge"
+    versionNumber = project.version + "_fabric"
     versionType = "RELEASE"
     uploadFile = remapJar
     changelog = fileContents
