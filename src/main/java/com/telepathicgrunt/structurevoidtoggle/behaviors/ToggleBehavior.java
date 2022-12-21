@@ -3,6 +3,7 @@ package com.telepathicgrunt.structurevoidtoggle.behaviors;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
@@ -53,7 +54,7 @@ public class ToggleBehavior {
 	public static boolean VISIBLE = true;
 
 	// The current mode for the structure void block forced rendering for the current client
-	public static boolean FORCED_RENDERING = true;
+	public static boolean FORCED_RENDERING = false;
 	
 	// Keybind for switching hitbox modes. 96 is the keycode for backtick `
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_TOGGLE = new KeyMapping(
@@ -149,7 +150,7 @@ public class ToggleBehavior {
 	/**
 	 * Switches between forced rendering when DELETE is pressed.
 	 */
-	public static void renderEvent(RenderLevelStageEvent event) {
+	public static void forceRenderInvisibleBlocks(RenderLevelStageEvent event) {
 		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS && FORCED_RENDERING) {
 			Player player = Minecraft.getInstance().player;
 			Level level = player.getLevel();
@@ -157,18 +158,23 @@ public class ToggleBehavior {
 			float drawRadius = 0.05f;
 			float minCorner = 0.5f - drawRadius;
 			float maxCorner = 0.5f + drawRadius;
+			Vector4f vector4fMin = new Vector4f(minCorner, minCorner, minCorner, 1.0F);
+			Vector4f vector4fMax = new Vector4f(maxCorner, maxCorner, maxCorner, 1.0F);
 
 			int radius = 40;
-			Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+			Vec3 cameraPos = event.getCamera().getPosition();
 			BlockPos centerPos = new BlockPos(cameraPos);
 			HashMap<ChunkPos, Boolean> chunkAllowedMap = new HashMap<>();
 			BlockPos.MutableBlockPos worldSpot = new BlockPos.MutableBlockPos();
+
+			PoseStack poseStack = event.getPoseStack();
+			poseStack.pushPose();
+			poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
 			Tesselator tesselator = Tesselator.getInstance();
 			RenderSystem.setShader(GameRenderer::getPositionColorShader);
 			BufferBuilder bufferbuilder = tesselator.getBuilder();
 			bufferbuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-			Matrix4f matrix4f = event.getPoseStack().last().pose();
 
 			for (int x = -radius; x <= radius; x++) {
 				for (int z = -radius; z <= radius; z++) {
@@ -216,20 +222,6 @@ public class ToggleBehavior {
 						boolean flag4 = flag1 || flag2 || flag3;
 						if (flag4) {
 
-							Vector4f vector4fMin = new Vector4f(
-									(float)(worldSpot.getX() - cameraPos.x()) + minCorner,
-									(float)(worldSpot.getY() - cameraPos.y()) + minCorner,
-									(float)(worldSpot.getZ() - cameraPos.z()) + minCorner,
-									1.0F);
-							Vector4f vector4fMax = new Vector4f(
-									(float)(worldSpot.getX() - cameraPos.x()) + maxCorner,
-									(float)(worldSpot.getY() - cameraPos.y()) + maxCorner,
-									(float)(worldSpot.getZ() - cameraPos.z()) + maxCorner,
-									1.0F);
-
-							vector4fMin.transform(matrix4f);
-							vector4fMax.transform(matrix4f);
-
 							int red = 255;
 							int green = 255;
 							int blue = 255;
@@ -248,12 +240,13 @@ public class ToggleBehavior {
 
 							renderLineBox(
 									bufferbuilder,
-									vector4fMin.x(),
-									vector4fMin.y(),
-									vector4fMin.z(),
-									vector4fMax.x(),
-									vector4fMax.y(),
-									vector4fMax.z(),
+									poseStack.last().pose(),
+									vector4fMin.x() + worldSpot.getX(),
+									vector4fMin.y() + worldSpot.getY(),
+									vector4fMin.z() + worldSpot.getZ(),
+									vector4fMax.x() + worldSpot.getX(),
+									vector4fMax.y() + worldSpot.getY(),
+									vector4fMax.z() + worldSpot.getZ(),
 									red,
 									green,
 									blue,
@@ -263,33 +256,34 @@ public class ToggleBehavior {
 				}
 			}
 			tesselator.end();
+			poseStack.popPose();
 		}
 	}
 	
-	public static void renderLineBox(BufferBuilder builder, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, int red, int green, int blue, int alpha) {
-		builder.vertex(minX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(maxX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(minX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(minX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(minX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(minX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(maxX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(maxX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(maxX, maxY, minZ).color(red, green, blue, alpha).normal(-1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(minX, maxY, minZ).color(red, green, blue, alpha).normal(-1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(minX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(minX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(minX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();
-		builder.vertex(minX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();
-		builder.vertex(minX, minY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(maxX, minY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(maxX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, -1.0F).endVertex();
-		builder.vertex(maxX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, -1.0F).endVertex();
-		builder.vertex(minX, maxY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(maxX, maxY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(maxX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(maxX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(maxX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(maxX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
+	public static void renderLineBox(BufferBuilder builder, Matrix4f pose, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int red, int green, int blue, int alpha) {
+		builder.vertex(pose, minX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(pose, maxX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(pose, minX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.vertex(pose, minX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.vertex(pose, minX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
+		builder.vertex(pose, minX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
+		builder.vertex(pose, maxX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.vertex(pose, maxX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.vertex(pose, maxX, maxY, minZ).color(red, green, blue, alpha).normal(-1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(pose, minX, maxY, minZ).color(red, green, blue, alpha).normal(-1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(pose, minX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
+		builder.vertex(pose, minX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
+		builder.vertex(pose, minX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();
+		builder.vertex(pose, minX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();
+		builder.vertex(pose, minX, minY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(pose, maxX, minY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(pose, maxX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, -1.0F).endVertex();
+		builder.vertex(pose, maxX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, -1.0F).endVertex();
+		builder.vertex(pose, minX, maxY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(pose, maxX, maxY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(pose, maxX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.vertex(pose, maxX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.vertex(pose, maxX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
+		builder.vertex(pose, maxX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
 	}
 }

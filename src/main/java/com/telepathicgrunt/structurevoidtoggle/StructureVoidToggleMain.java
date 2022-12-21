@@ -18,6 +18,6 @@ public class StructureVoidToggleMain {
 	public StructureVoidToggleMain() {
 		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> StructureVoidToggleClient::onInitializeClient);
 
-		MinecraftForge.EVENT_BUS.addListener(ToggleBehavior::renderEvent);
+		MinecraftForge.EVENT_BUS.addListener(ToggleBehavior::forceRenderInvisibleBlocks);
 	}
 }
