@@ -1,13 +1,34 @@
 package com.telepathicgrunt.structurevoidtoggle.behaviors;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector4f;
+import com.telepathicgrunt.structurevoidtoggle.mixin.LevelRendererAccessor;
 import com.telepathicgrunt.structurevoidtoggle.mixin.StructureVoidBlockAccessor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.HashMap;
 
 public class ToggleBehavior {
 	public enum STRUCTURE_BLOCK_MODE {
@@ -30,6 +51,9 @@ public class ToggleBehavior {
 
 	// The current mode for the structure void block rendering for the current client
 	public static boolean VISIBLE = true;
+
+	// The current mode for the structure void block forced rendering for the current client
+	public static boolean FORCED_RENDERING = true;
 	
 	// Keybind for switching hitbox modes. 96 is the keycode for backtick `
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_TOGGLE = new KeyMapping(
@@ -38,6 +62,11 @@ public class ToggleBehavior {
 	// Keybind for switching render modes. INSERT by default
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE = new KeyMapping(
 			"key.structure_void_render", GLFW.GLFW_KEY_INSERT, "key.categories.misc"
+	);
+
+	// Keybind for forcing structure void rendering
+	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_FORCED_RENDER_TOGGLE = new KeyMapping(
+			"key.structure_void_render", GLFW.GLFW_KEY_DELETE, "key.categories.misc"
 	);
 
 	/**
@@ -49,6 +78,9 @@ public class ToggleBehavior {
 		}
 		if (KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE.isDown()) {
 			toggleRender();
+		}
+		if (KEY_BIND_STRUCTURE_VOID_FORCED_RENDER_TOGGLE.isDown()) {
+			toggleForcedRender();
 		}
 	}
 
@@ -96,5 +128,168 @@ public class ToggleBehavior {
 		else {
 			player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Invisible.")), true);
 		}
+	}
+
+	/**
+	 * Switches between forced rendering when DELETE is pressed.
+	 */
+	private static void toggleForcedRender() {
+		FORCED_RENDERING = !FORCED_RENDERING;
+		LocalPlayer player  = Minecraft.getInstance().player;
+		if (player == null) return;
+
+		if (FORCED_RENDERING) {
+			player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Forced Rendering.")), true);
+		}
+		else {
+			player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Disabled Forced Rendering.")), true);
+		}
+	}
+
+	/**
+	 * Switches between forced rendering when DELETE is pressed.
+	 */
+	public static void renderEvent(RenderLevelStageEvent event) {
+		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS && FORCED_RENDERING) {
+			Player player = Minecraft.getInstance().player;
+			Level level = player.getLevel();
+
+			float drawRadius = 0.05f;
+			float minCorner = 0.5f - drawRadius;
+			float maxCorner = 0.5f + drawRadius;
+
+			int radius = 40;
+			Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+			BlockPos centerPos = new BlockPos(cameraPos);
+			HashMap<ChunkPos, Boolean> chunkAllowedMap = new HashMap<>();
+			BlockPos.MutableBlockPos worldSpot = new BlockPos.MutableBlockPos();
+
+			Tesselator tesselator = Tesselator.getInstance();
+			RenderSystem.setShader(GameRenderer::getPositionColorShader);
+			BufferBuilder bufferbuilder = tesselator.getBuilder();
+			bufferbuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+			Matrix4f matrix4f = event.getPoseStack().last().pose();
+
+			for (int x = -radius; x <= radius; x++) {
+				for (int z = -radius; z <= radius; z++) {
+					for (int y = -radius; y <= radius; y++) {
+						if (x * x + y * y + z * z > radius * radius) {
+							continue;
+						}
+
+						worldSpot.set(centerPos.getX() + x, centerPos.getY() + y, centerPos.getZ() + z);
+						ChunkPos chunkPos = new ChunkPos(worldSpot);
+						boolean isValidChunk = chunkAllowedMap.computeIfAbsent(chunkPos,
+								(c) -> {
+									for(LevelChunkSection levelChunkSection : level.getChunk(chunkPos.x, chunkPos.z).getSections()) {
+										if (levelChunkSection.getStates().maybeHas((b) ->
+												b.is(Blocks.STRUCTURE_VOID) ||
+												b.is(Blocks.BARRIER) ||
+												b.is(Blocks.LIGHT)))
+										{
+											return true;
+										}
+									}
+									return false;
+								});
+
+						if (!isValidChunk) {
+							z = (((worldSpot.getZ() >> 4) + 1) << 4) - 1 - centerPos.getZ();
+							break;
+						}
+
+						if (!((LevelRendererAccessor)event.getLevelRenderer()).getCullingFrustum().isVisible(new AABB(
+								worldSpot.getX() + minCorner,
+								worldSpot.getY() + minCorner,
+								worldSpot.getZ() + minCorner,
+								worldSpot.getX() + maxCorner,
+								worldSpot.getY() + maxCorner,
+								worldSpot.getZ() + maxCorner)))
+						{
+							continue;
+						}
+
+						BlockState blockstate = level.getBlockState(worldSpot);
+						boolean flag1 = blockstate.is(Blocks.STRUCTURE_VOID);
+						boolean flag2 = blockstate.is(Blocks.BARRIER);
+						boolean flag3 = blockstate.is(Blocks.LIGHT);
+						boolean flag4 = flag1 || flag2 || flag3;
+						if (flag4) {
+
+							Vector4f vector4fMin = new Vector4f(
+									(float)(worldSpot.getX() - cameraPos.x()) + minCorner,
+									(float)(worldSpot.getY() - cameraPos.y()) + minCorner,
+									(float)(worldSpot.getZ() - cameraPos.z()) + minCorner,
+									1.0F);
+							Vector4f vector4fMax = new Vector4f(
+									(float)(worldSpot.getX() - cameraPos.x()) + maxCorner,
+									(float)(worldSpot.getY() - cameraPos.y()) + maxCorner,
+									(float)(worldSpot.getZ() - cameraPos.z()) + maxCorner,
+									1.0F);
+
+							vector4fMin.transform(matrix4f);
+							vector4fMax.transform(matrix4f);
+
+							int red = 255;
+							int green = 255;
+							int blue = 255;
+							int alpha = 255;
+							if (flag1) {
+								green = 190;
+								blue = 190;
+							}
+							else if (flag2) {
+								green = 0;
+								blue = 0;
+							}
+							else if (flag3) {
+								blue = 0;
+							}
+
+							renderLineBox(
+									bufferbuilder,
+									vector4fMin.x(),
+									vector4fMin.y(),
+									vector4fMin.z(),
+									vector4fMax.x(),
+									vector4fMax.y(),
+									vector4fMax.z(),
+									red,
+									green,
+									blue,
+									alpha);
+						}
+					}
+				}
+			}
+			tesselator.end();
+		}
+	}
+	
+	public static void renderLineBox(BufferBuilder builder, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, int red, int green, int blue, int alpha) {
+		builder.vertex(minX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(maxX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(minX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.vertex(minX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.vertex(minX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
+		builder.vertex(minX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
+		builder.vertex(maxX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.vertex(maxX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.vertex(maxX, maxY, minZ).color(red, green, blue, alpha).normal(-1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(minX, maxY, minZ).color(red, green, blue, alpha).normal(-1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(minX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
+		builder.vertex(minX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
+		builder.vertex(minX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();
+		builder.vertex(minX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();
+		builder.vertex(minX, minY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(maxX, minY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(maxX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, -1.0F).endVertex();
+		builder.vertex(maxX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, -1.0F).endVertex();
+		builder.vertex(minX, maxY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(maxX, maxY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.vertex(maxX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.vertex(maxX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.vertex(maxX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
+		builder.vertex(maxX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
 	}
 }
