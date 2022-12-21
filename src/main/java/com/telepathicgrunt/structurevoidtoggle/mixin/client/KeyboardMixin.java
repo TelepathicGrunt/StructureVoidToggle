@@ -1,4 +1,4 @@
-package com.telepathicgrunt.structurevoidtoggle.mixin;
+package com.telepathicgrunt.structurevoidtoggle.mixin.client;
 
 import com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior;
 import net.minecraft.client.KeyboardHandler;

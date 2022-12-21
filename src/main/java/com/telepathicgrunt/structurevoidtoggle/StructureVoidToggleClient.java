@@ -15,5 +15,6 @@ public class StructureVoidToggleClient {
     public static void registerKeyBinding(RegisterKeyMappingsEvent event) {
         event.register(ToggleBehavior.KEY_BIND_STRUCTURE_VOID_TOGGLE);
         event.register(ToggleBehavior.KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE);
+        event.register(ToggleBehavior.KEY_BIND_STRUCTURE_VOID_FORCED_RENDER_TOGGLE);
     }
 }

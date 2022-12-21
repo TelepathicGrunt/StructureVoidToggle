@@ -8,7 +8,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector4f;
-import com.telepathicgrunt.structurevoidtoggle.mixin.LevelRendererAccessor;
+import com.telepathicgrunt.structurevoidtoggle.mixin.client.LevelRendererAccessor;
 import com.telepathicgrunt.structurevoidtoggle.mixin.StructureVoidBlockAccessor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -58,16 +58,16 @@ public class ToggleBehavior {
 	
 	// Keybind for switching hitbox modes. 96 is the keycode for backtick `
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_TOGGLE = new KeyMapping(
-			"key.structure_void", GLFW.GLFW_KEY_GRAVE_ACCENT, "key.categories.misc");
+			"key.structure_void", GLFW.GLFW_KEY_GRAVE_ACCENT, "key.categories.structure_void_toggle");
 
 	// Keybind for switching render modes. INSERT by default
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE = new KeyMapping(
-			"key.structure_void_render", GLFW.GLFW_KEY_INSERT, "key.categories.misc"
+			"key.structure_void_render", GLFW.GLFW_KEY_INSERT, "key.categories.structure_void_toggle"
 	);
 
 	// Keybind for forcing structure void rendering
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_FORCED_RENDER_TOGGLE = new KeyMapping(
-			"key.structure_void_render", GLFW.GLFW_KEY_DELETE, "key.categories.misc"
+			"key.forced_render", GLFW.GLFW_KEY_DELETE, "key.categories.structure_void_toggle"
 	);
 
 	/**
@@ -99,15 +99,15 @@ public class ToggleBehavior {
 
 		switch (MODE) {
 			case NO_HITBOX :
-				player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: No hitbox set.")), true);
+				player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.no_hitbox")), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D));
 				break;
 			case SMALL_HITBOX :
-				player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Small hitbox set.")), true);
+				player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.small_hitbox")), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(5.0D, 5.0D, 5.0D, 11.0D, 11.0D, 11.0D));
 				break;
 			case FULL_HITBOX :
-				player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Full hitbox set.")), true);
+				player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.full_hitbox")), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D));
 				break;
 			default :
@@ -124,10 +124,10 @@ public class ToggleBehavior {
 		if (player == null) return;
 
 		if (VISIBLE) {
-			player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Visible.")), true);
+			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.structure_block_visible")), true);
 		}
 		else {
-			player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Invisible.")), true);
+			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.structure_block_invisible")), true);
 		}
 	}
 
@@ -140,10 +140,10 @@ public class ToggleBehavior {
 		if (player == null) return;
 
 		if (FORCED_RENDERING) {
-			player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Forced Rendering.")), true);
+			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.invisible_blocks_forced_render")), true);
 		}
 		else {
-			player.displayClientMessage(MutableComponent.create(new TranslatableContents("Structure Void Toggle: Disabled Forced Rendering.")), true);
+			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.invisible_blocks_disabled_forced_render")), true);
 		}
 	}
 
@@ -259,8 +259,8 @@ public class ToggleBehavior {
 			poseStack.popPose();
 		}
 	}
-	
-	public static void renderLineBox(BufferBuilder builder, Matrix4f pose, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int red, int green, int blue, int alpha) {
+
+	private static void renderLineBox(BufferBuilder builder, Matrix4f pose, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int red, int green, int blue, int alpha) {
 		builder.vertex(pose, minX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
 		builder.vertex(pose, maxX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
 		builder.vertex(pose, minX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
