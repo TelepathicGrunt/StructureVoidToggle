@@ -1,4 +1,13 @@
 {
+  "key.categories.structure_void_toggle": "Structure Void Toggle",
   "key.structure_void": "Structure Void Toggle",
-  "key.structure_void_render": "Structure Void Render Toggle"
+  "key.structure_void_render": "Structure Block Disable Render Toggle",
+  "key.forced_render": "Invisible Block Forced Render Toggle",
+  "system.structure_void_toggle.no_hitbox": "Structure Void Toggle: No hitbox set",
+  "system.structure_void_toggle.small_hitbox": "Structure Void Toggle: Small hitbox set",
+  "system.structure_void_toggle.full_hitbox": "Structure Void Toggle: Full hitbox set",
+  "system.structure_void_toggle.structure_block_invisible": "Structure Block Disable Render Toggle: Rendering Disabled",
+  "system.structure_void_toggle.structure_block_visible": "Structure Block Disable Render Toggle: Rendering Allowed",
+  "system.structure_void_toggle.invisible_blocks_forced_render": "Invisible Blocks Toggle: Forced Rendering",
+  "system.structure_void_toggle.invisible_blocks_disabled_forced_render": "Invisible Blocks Toggle: Disabled Forced Rendering"
 }
