@@ -65,7 +65,7 @@ task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge)
 	mainFile.changelogType = "markdown"
 	mainFile.releaseType = "release"
 	mainFile.displayName = "Structure Void Toggle v${project.mod_version} (Fabric)"
-	mainFile.addGameVersion("1.19.2")
+	mainFile.addGameVersion("1.19.3")
 }
 
 task buildAndRelease{}
