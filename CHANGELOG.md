@@ -1,3 +1,9 @@
+### **(V.4.1.2 Changes) (1.19.3 Minecraft)**
+
+#### Behavior:
+Forced Rendering shows larger cube when Structure Void hitbox is set to large
+
+
 ### **(V.4.1.1 Changes) (1.19.3 Minecraft)**
 
 #### Misc:

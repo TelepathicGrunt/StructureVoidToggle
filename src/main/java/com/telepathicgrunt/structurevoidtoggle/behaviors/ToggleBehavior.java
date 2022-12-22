@@ -156,7 +156,13 @@ public class ToggleBehavior
 			Player player = Minecraft.getInstance().player;
 			Level level = player.getLevel();
 
-			float drawRadius = 0.05f;
+			float drawRadius;
+			if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
+				drawRadius = 0.4f;
+			}
+			else {
+				drawRadius = 0.05f;
+			}
 			float minCorner = 0.5f - drawRadius;
 			float maxCorner = 0.5f + drawRadius;
 			Vector4f vector4fMin = new Vector4f(minCorner, minCorner, minCorner, 1.0F);
