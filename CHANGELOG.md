@@ -1,3 +1,9 @@
+### **(V.4.1.3 Changes) (1.19.3 Minecraft)**
+
+#### Behavior:
+Improved full cube Forced Rendering looks to use solid cube drawings instead of lines
+
+
 ### **(V.4.1.2 Changes) (1.19.3 Minecraft)**
 
 #### Behavior:
