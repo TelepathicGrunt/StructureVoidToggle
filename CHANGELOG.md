@@ -1,3 +1,9 @@
+### **(V.4.1.4 Changes) (1.19.3 Minecraft)**
+
+#### Misc:
+Fixed some code behind the scenes to try and make sure mod doesn't crash server if accidentally put on server.
+
+
 ### **(V.4.1.3 Changes) (1.19.3 Minecraft)**
 
 #### Behavior:

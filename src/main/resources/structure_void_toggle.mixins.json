@@ -4,11 +4,11 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "structure_void_toggle.refmap.json",
   "mixins": [
-    "client.LevelRendererAccessor",
     "StructureVoidBlockAccessor"
   ],
   "client": [
     "client.KeyboardMixin",
+    "client.LevelRendererAccessor",
     "client.StructureBlockRendererMixin"
   ],
   "injectors": {
