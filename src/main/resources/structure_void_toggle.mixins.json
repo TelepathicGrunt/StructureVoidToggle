@@ -4,6 +4,8 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "structure_void_toggle.refmap.json",
   "mixins": [
+    "BarrierBlockMixin",
+    "LightBlockMixin",
     "StructureVoidBlockAccessor"
   ],
   "client": [
