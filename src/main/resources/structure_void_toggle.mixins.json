@@ -4,13 +4,15 @@
   "package": "com.telepathicgrunt.structurevoidtoggle.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "StructureVoidBlockAccessor",
-    "client.StructureBlockRendererMixin"
+    "BarrierBlockMixin",
+    "LightBlockMixin",
+    "StructureVoidBlockAccessor"
   ],
   "client": [
     "client.KeyboardHandlerMixin",
     "client.LevelRendererAccessor",
-    "client.LevelRendererMixin"
+    "client.LevelRendererMixin",
+    "client.StructureBlockRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
