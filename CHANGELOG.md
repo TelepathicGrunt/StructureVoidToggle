@@ -5,5 +5,8 @@ Clicking backtick now has a Default mode and also applies to Barrier and Light b
  Default mode will go back to the block's original bounding box shapes/behaviors. 
  NOTE: Barrier Block collision will remain active as a full block if connected to a server so you won't be able to pass through on servers. 
 
+#### Non Replaceable Mode:
+Clicking Page Up will make Structure Void and Light Block now let you place other blocks on them instead of replacing them.
+
 #### Fabulous Mode:
 Fixed outlines not rendering when in Fabulous Mode.

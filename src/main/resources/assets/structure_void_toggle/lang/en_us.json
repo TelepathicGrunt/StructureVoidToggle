@@ -1,8 +1,9 @@
 {
   "key.categories.structure_void_toggle": "Structure Void Toggle",
-  "key.structure_void": "Structure Void Toggle",
+  "key.structure_void": "Structure Void Hitbox Toggle",
   "key.structure_void_render": "Structure Block Disable Render Toggle",
   "key.forced_render": "Invisible Block Forced Render Toggle",
+  "key.non_replacing": "Forced Non-Replaceable Toggle",
   "system.structure_void_toggle.default_hitbox": "Bounding Box Toggle: Default bounding boxes set",
   "system.structure_void_toggle.no_hitbox": "Bounding Box Toggle: No hitbox set",
   "system.structure_void_toggle.small_hitbox": "Bounding Box Toggle: Small hitbox set",
@@ -10,5 +11,7 @@
   "system.structure_void_toggle.structure_block_invisible": "Structure Block Disable Render Toggle: Rendering Disabled",
   "system.structure_void_toggle.structure_block_visible": "Structure Block Disable Render Toggle: Rendering Allowed",
   "system.structure_void_toggle.invisible_blocks_forced_render": "Invisible Blocks Toggle: Forced Rendering",
-  "system.structure_void_toggle.invisible_blocks_disabled_forced_render": "Invisible Blocks Toggle: Disabled Forced Rendering"
+  "system.structure_void_toggle.invisible_blocks_disabled_forced_render": "Invisible Blocks Toggle: Disabled Forced Rendering",
+  "system.structure_void_toggle.invisible_blocks_replaceable": "Forced Non-Replaceable Toggle: Disabled",
+  "system.structure_void_toggle.invisible_blocks_non_replaceable": "Forced Non-Replaceable Toggle: Enabled"
 }

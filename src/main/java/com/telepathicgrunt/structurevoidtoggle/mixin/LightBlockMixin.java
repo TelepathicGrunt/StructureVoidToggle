@@ -1,14 +1,21 @@
 package com.telepathicgrunt.structurevoidtoggle.mixin;
 
 import com.telepathicgrunt.structurevoidtoggle.behaviors.ShapeInterface;
+import com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BarrierBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -32,6 +39,25 @@ public class LightBlockMixin extends Block implements ShapeInterface {
         }
         return collisionContext.isHoldingItem(Items.LIGHT) ? Shapes.block() : Shapes.empty();
     }
+
+    @Override
+    public InteractionResult use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
+        if (!player.getItemInHand(interactionHand).is(Items.LIGHT)) {
+            return InteractionResult.PASS;
+        }
+        else {
+            return super.use(blockState, level, blockPos, player, interactionHand, blockHitResult);
+        }
+    }
+
+    @Override
+    public boolean canBeReplaced(BlockState blockState, BlockPlaceContext context) {
+        if (ToggleBehavior.FORCED_NON_REPLACEABLE) {
+            return false;
+        }
+        return super.canBeReplaced(blockState, context);
+    }
+
 
     @Override
     public void setShape(VoxelShape shape) {
