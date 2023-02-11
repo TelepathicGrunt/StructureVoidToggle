@@ -64,6 +64,9 @@ public class ToggleBehavior
 	// The current mode for the structure void block forced rendering for the current client
 	public static boolean FORCED_RENDERING = false;
 
+	// The current mode for if player placing is put on top of this block or replaces this block
+	public static boolean FORCED_NON_REPLACEABLE = false;
+
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_TOGGLE =  new KeyMapping(
 			"key.structure_void", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_GRAVE_ACCENT, "key.categories.structure_void_toggle");
 
@@ -72,6 +75,9 @@ public class ToggleBehavior
 
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_FORCED_RENDER_TOGGLE =  new KeyMapping(
 			"key.forced_render", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_DELETE, "key.categories.structure_void_toggle");
+
+	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_NON_REPLACING_TOGGLE =  new KeyMapping(
+			"key.non_replacing", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_PAGE_UP, "key.categories.structure_void_toggle");
 
 	/**
 	 * Toggles settings for the relevant keypress.
@@ -85,6 +91,9 @@ public class ToggleBehavior
 		}
 		if (KEY_BIND_STRUCTURE_VOID_FORCED_RENDER_TOGGLE.isDown()) {
 			toggleForcedRender();
+		}
+		if (KEY_BIND_STRUCTURE_VOID_NON_REPLACING_TOGGLE.isDown()) {
+			toggleNonReplaceable();
 		}
 	}
 
@@ -143,6 +152,22 @@ public class ToggleBehavior
 		}
 		else {
 			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.structure_block_invisible")), true);
+		}
+	}
+
+	/**
+	 * Switches between forced non-replaceable when PAGEUP is pressed.
+	 */
+	private static void toggleNonReplaceable() {
+		FORCED_NON_REPLACEABLE = !FORCED_NON_REPLACEABLE;
+		LocalPlayer player  = Minecraft.getInstance().player;
+		if (player == null) return;
+
+		if (FORCED_NON_REPLACEABLE) {
+			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.invisible_blocks_non_replaceable")), true);
+		}
+		else {
+			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.invisible_blocks_replaceable")), true);
 		}
 	}
 

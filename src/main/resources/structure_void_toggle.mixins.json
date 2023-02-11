@@ -6,7 +6,8 @@
   "mixins": [
     "BarrierBlockMixin",
     "LightBlockMixin",
-    "StructureVoidBlockAccessor"
+    "StructureVoidBlockAccessor",
+    "StructureVoidBlockMixin"
   ],
   "client": [
     "client.KeyboardHandlerMixin",
