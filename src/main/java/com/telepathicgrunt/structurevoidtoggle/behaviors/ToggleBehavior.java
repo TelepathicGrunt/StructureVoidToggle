@@ -17,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -151,8 +152,8 @@ public class ToggleBehavior
 	/**
 	 * Switches between forced rendering when DELETE is pressed.
 	 */
-	public static void forceRenderInvisibleBlocks(PoseStack poseStack, Camera camera, LevelRenderer levelRenderer) {
-		if (FORCED_RENDERING) {
+	public static void forceRenderInvisibleBlocks(RenderType renderType, PoseStack poseStack, Camera camera, LevelRenderer levelRenderer) {
+		if (renderType == RenderType.cutout() && FORCED_RENDERING) {
 			Player player = Minecraft.getInstance().player;
 			Level level = player.getLevel();
 
