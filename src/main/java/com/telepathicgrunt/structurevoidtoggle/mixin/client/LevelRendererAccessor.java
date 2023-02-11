@@ -8,9 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(LevelRenderer.class)
 public interface LevelRendererAccessor {
-    @Accessor("renderBuffers")
-    RenderBuffers getRenderBuffers();
-
     @Accessor("cullingFrustum")
     Frustum getCullingFrustum();
 }

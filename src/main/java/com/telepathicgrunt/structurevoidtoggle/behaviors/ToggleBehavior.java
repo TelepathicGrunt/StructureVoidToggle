@@ -38,6 +38,7 @@ public class ToggleBehavior
 {
 	public enum STRUCTURE_BLOCK_MODE
 	{
+		DEFAULT,
 		NO_HITBOX, 
 		SMALL_HITBOX, 
 		FULL_HITBOX;
@@ -55,7 +56,7 @@ public class ToggleBehavior
 	}
 	
 	// The current mode for the structure void block for the current client
-	public static STRUCTURE_BLOCK_MODE MODE = STRUCTURE_BLOCK_MODE.SMALL_HITBOX;
+	public static STRUCTURE_BLOCK_MODE MODE = STRUCTURE_BLOCK_MODE.DEFAULT;
 
 	// The current mode for the structure void block rendering for the current client
 	public static boolean VISIBLE = true;
@@ -100,20 +101,32 @@ public class ToggleBehavior
 		if(player == null) return;
 
 		switch (MODE) {
-			case NO_HITBOX :
+			case DEFAULT -> {
+				player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.default_hitbox")), true);
+				StructureVoidBlockAccessor.setSHAPE(Block.box(5, 5, 5, 11, 11, 11));
+				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 16, 16, 16));
+				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(-2, -2, -2, -1, -1, -1));
+			}
+			case NO_HITBOX -> {
 				player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.no_hitbox")), true);
-				StructureVoidBlockAccessor.setSHAPE(Block.box(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D));
-				break;
-			case SMALL_HITBOX :
+				StructureVoidBlockAccessor.setSHAPE(Block.box(0, 0, 0, 0, 0, 0));
+				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 0, 0, 0));
+				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(0, 0, 0, 0, 0, 0));
+			}
+			case SMALL_HITBOX -> {
 				player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.small_hitbox")), true);
-				StructureVoidBlockAccessor.setSHAPE(Block.box(5.0D, 5.0D, 5.0D, 11.0D, 11.0D, 11.0D));
-				break;
-			case FULL_HITBOX :
+				StructureVoidBlockAccessor.setSHAPE(Block.box(5, 5, 5, 11, 11, 11));
+				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(5, 5, 5, 11, 11, 11));
+				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(5, 5, 5, 11, 11, 11));
+			}
+			case FULL_HITBOX -> {
 				player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.full_hitbox")), true);
-				StructureVoidBlockAccessor.setSHAPE(Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D));
-				break;
-			default :
-				break;
+				StructureVoidBlockAccessor.setSHAPE(Block.box(0, 0, 0, 16, 16, 16));
+				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 16, 16, 16));
+				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(0, 0, 0, 16, 16, 16));
+			}
+			default -> {
+			}
 		}
 	}
 
