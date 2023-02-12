@@ -40,6 +40,14 @@ public class LightBlockMixin extends Block implements ShapeInterface {
     }
 
     @Override
+    public VoxelShape getCollisionShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {
+        if (SHAPE.isEmpty() || SHAPE.max(Direction.Axis.X) >= 0) {
+            return Shapes.empty();
+        }
+        return super.getCollisionShape(blockState, blockGetter, blockPos, collisionContext);
+    }
+
+    @Override
     public InteractionResult use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
         if (!player.getItemInHand(interactionHand).is(Items.LIGHT)) {
             return InteractionResult.PASS;
