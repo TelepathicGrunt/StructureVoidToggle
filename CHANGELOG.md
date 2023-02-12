@@ -1,3 +1,9 @@
+### **(V.4.2.1 Changes) (1.19.3 Minecraft)**
+
+#### Non Replaceable Mode:
+Fixed Light Block having a physical collision box when Non Replaceable mode is on and Bounding Box is set to small or full block.
+
+
 ### **(V.4.2.0 Changes) (1.19.3 Minecraft)**
 
 #### Bounding Box Mode:
