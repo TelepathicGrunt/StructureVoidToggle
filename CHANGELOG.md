@@ -1,3 +1,9 @@
+### **(V.4.2.1 Changes) (1.19.2 Minecraft)**
+
+#### Forced Rendering Mode:
+Sorry, forgot to backport the full box rendering when Forced Rendering is on and Bounding Box is set to Full Block mode.
+
+
 ### **(V.4.2.0 Changes) (1.19.2 Minecraft)**
 
 #### Bounding Box Mode:
