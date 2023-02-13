@@ -1,3 +1,9 @@
+### **(V.4.2.2 Changes) (1.19.3 Minecraft)**
+
+#### Mod Compat:
+Fixed crash with Sodium.
+
+
 ### **(V.4.2.1 Changes) (1.19.3 Minecraft)**
 
 #### Non Replaceable Mode:
