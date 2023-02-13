@@ -190,8 +190,8 @@ public class ToggleBehavior
 	/**
 	 * Switches between forced rendering when DELETE is pressed.
 	 */
-	public static void forceRenderInvisibleBlocks(RenderType renderType, PoseStack poseStack, Camera camera, LevelRenderer levelRenderer) {
-		if (renderType == RenderType.cutout() && FORCED_RENDERING) {
+	public static void forceRenderInvisibleBlocks(PoseStack poseStack, Camera camera, LevelRenderer levelRenderer) {
+		if (FORCED_RENDERING) {
 			Player player = Minecraft.getInstance().player;
 			Level level = player.getLevel();
 
@@ -213,10 +213,12 @@ public class ToggleBehavior
 			HashMap<ChunkPos, Boolean> chunkAllowedMap = new HashMap<>();
 			BlockPos.MutableBlockPos worldSpot = new BlockPos.MutableBlockPos();
 
+			RenderType.cutout().setupRenderState();
 			poseStack.pushPose();
 			poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
 			Tesselator tesselator = Tesselator.getInstance();
+			RenderSystem.enableDepthTest();
 			RenderSystem.setShader(GameRenderer::getPositionColorShader);
 			BufferBuilder bufferbuilder = tesselator.getBuilder();
 			if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
@@ -328,6 +330,7 @@ public class ToggleBehavior
 			}
 			tesselator.end();
 			poseStack.popPose();
+			RenderType.cutout().clearRenderState();
 		}
 	}
 
