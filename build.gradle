@@ -9,12 +9,12 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath 'org.parchmentmc:librarian:1.+'
 		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-        classpath group: 'gradle.plugin.com.modrinth.minotaur', name: 'Minotaur', version: '1.2.1'
 	}
 }
 
 plugins {
     id "net.darkhax.curseforgegradle" version "1.0.7"
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 apply plugin: 'net.minecraftforge.gradle'
@@ -22,6 +22,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: "com.modrinth.minotaur"
 
 version = "${mod_version}+${mc_version}"
 group = "com.telepathicgrunt"
@@ -65,18 +66,18 @@ mixin {
 apply from: 'gradle/processresources.gradle'
 apply from: 'gradle/manifest.gradle'
 apply from: 'gradle/maven.gradle'
-apply from: 'gradle/modrinth.gradle'
+String changelogText = file("CHANGELOG.md").getText('UTF-8')
+
 task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
     apiToken = "$System.env.CURSEFORGEKEY"
     int projectId = 357304
-    String changelogText = new File("CHANGELOG.md").getText('UTF-8')
 
     def mainFile = upload(projectId, jar)
     mainFile.changelog = changelogText
     mainFile.changelogType = "markdown"
     mainFile.releaseType = "release"
     mainFile.displayName = "Structure Void Toggle v${project.mod_version} (Forge)"
-    mainFile.addGameVersion("1.19.3")
+    mainFile.addGameVersion("${project.mc_version}")
 }
 
 task checkForRefmap() {
@@ -86,9 +87,21 @@ task checkForRefmap() {
     }
 }
 
+modrinth {
+    token = "$System.env.MODRINTH"
+    projectId = 'S1tbzJ6Y'
+    versionName = "Structure Void Toggle v${project.mod_version} Forge"
+    versionNumber = project.version + "_forge"
+    uploadFile = jar
+    versionType = "RELEASE"
+    changelog = changelogText
+    gameVersions = ["${project.mc_version}"]
+    loaders = ['forge']
+}
+
 task buildAndRelease{}
 tasks.checkForRefmap.mustRunAfter tasks.build
 tasks.publish.mustRunAfter tasks.checkForRefmap
 tasks.publishCurseForge.mustRunAfter tasks.publish
-tasks.publishModrinth.mustRunAfter tasks.publish
-tasks.buildAndRelease.dependsOn(tasks.build, tasks.checkForRefmap, tasks.publish, tasks.publishCurseForge, tasks.publishModrinth)
+tasks.modrinth.mustRunAfter tasks.publish
+tasks.buildAndRelease.dependsOn(tasks.build, tasks.checkForRefmap, tasks.publish, tasks.publishCurseForge, tasks.modrinth)
