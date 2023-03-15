@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.entity.player.Player;
@@ -111,25 +112,25 @@ public class ToggleBehavior
 
 		switch (MODE) {
 			case DEFAULT -> {
-				player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.default_hitbox")), true);
+				player.displayClientMessage(Component.translatable("system.structure_void_toggle.default_hitbox"), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(5, 5, 5, 11, 11, 11));
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 16, 16, 16));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(-2, -2, -2, -1, -1, -1));
 			}
 			case NO_HITBOX -> {
-				player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.no_hitbox")), true);
+				player.displayClientMessage(Component.translatable("system.structure_void_toggle.no_hitbox"), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(0, 0, 0, 0, 0, 0));
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 0, 0, 0));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(0, 0, 0, 0, 0, 0));
 			}
 			case SMALL_HITBOX -> {
-				player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.small_hitbox")), true);
+				player.displayClientMessage(Component.translatable("system.structure_void_toggle.small_hitbox"), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(5, 5, 5, 11, 11, 11));
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(5, 5, 5, 11, 11, 11));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(5, 5, 5, 11, 11, 11));
 			}
 			case FULL_HITBOX -> {
-				player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.full_hitbox")), true);
+				player.displayClientMessage(Component.translatable("system.structure_void_toggle.full_hitbox"), true);
 				StructureVoidBlockAccessor.setSHAPE(Block.box(0, 0, 0, 16, 16, 16));
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 16, 16, 16));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(0, 0, 0, 16, 16, 16));
@@ -148,10 +149,10 @@ public class ToggleBehavior
 		if (player == null) return;
 
 		if (VISIBLE) {
-			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.structure_block_visible")), true);
+			player.displayClientMessage(Component.translatable("system.structure_void_toggle.structure_block_visible"), true);
 		}
 		else {
-			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.structure_block_invisible")), true);
+			player.displayClientMessage(Component.translatable("system.structure_void_toggle.structure_block_invisible"), true);
 		}
 	}
 
@@ -164,10 +165,10 @@ public class ToggleBehavior
 		if (player == null) return;
 
 		if (FORCED_NON_REPLACEABLE) {
-			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.invisible_blocks_non_replaceable")), true);
+			player.displayClientMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_non_replaceable"), true);
 		}
 		else {
-			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.invisible_blocks_replaceable")), true);
+			player.displayClientMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_replaceable"), true);
 		}
 	}
 
@@ -180,10 +181,10 @@ public class ToggleBehavior
 		if (player == null) return;
 
 		if (FORCED_RENDERING) {
-			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.invisible_blocks_forced_render")), true);
+			player.displayClientMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_forced_render"), true);
 		}
 		else {
-			player.displayClientMessage(MutableComponent.create(new TranslatableContents("system.structure_void_toggle.invisible_blocks_disabled_forced_render")), true);
+			player.displayClientMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_disabled_forced_render"), true);
 		}
 	}
 
@@ -209,7 +210,7 @@ public class ToggleBehavior
 
 			int radius = 40;
 			Vec3 cameraPos = camera.getPosition();
-			BlockPos centerPos = new BlockPos(cameraPos);
+			BlockPos centerPos = new BlockPos((int) cameraPos.x(), (int) cameraPos.y(), (int) cameraPos.z());
 			HashMap<ChunkPos, Boolean> chunkAllowedMap = new HashMap<>();
 			BlockPos.MutableBlockPos worldSpot = new BlockPos.MutableBlockPos();
 
