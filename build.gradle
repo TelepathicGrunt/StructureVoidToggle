@@ -70,15 +70,15 @@ apply from: 'gradle/maven.gradle'
 String changelogText = file("CHANGELOG.md").getText('UTF-8')
 
 modrinth {
-    token = System.getenv("MODRINTH")
+    token = "$System.env.MODRINTH"
+    projectId = 'S1tbzJ6Y'
     versionName = "Structure Void Toggle v${project.mod_version} Forge"
-    versionNumber = project.version
-    projectId = "S1tbzJ6Y"
+    versionNumber = project.version + "_forge"
     uploadFile = jar
-    changelog = changelogText
     versionType = "RELEASE"
-    gameVersions = ["1.19.4"]
-    loaders = ["forge"]
+    changelog = changelogText
+    gameVersions = ["${project.mc_version}"]
+    loaders = ['forge']
 }
 
 task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
@@ -98,18 +98,6 @@ task checkForRefmap() {
         assert zipTree("./build/libs/structure_void_toggle_forge-${project.mod_version}+${project.mc_version}.jar")
                 .matching { include "structure_void_toggle.refmap.json" }.getSingleFile() != null
     }
-}
-
-modrinth {
-    token = "$System.env.MODRINTH"
-    projectId = 'S1tbzJ6Y'
-    versionName = "Structure Void Toggle v${project.mod_version} Forge"
-    versionNumber = project.version + "_forge"
-    uploadFile = jar
-    versionType = "RELEASE"
-    changelog = changelogText
-    gameVersions = ["${project.mc_version}"]
-    loaders = ['forge']
 }
 
 task buildAndRelease{}
