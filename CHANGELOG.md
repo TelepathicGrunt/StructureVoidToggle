@@ -1,3 +1,9 @@
+## **(V.4.2.4 Changes) (1.19.2 Minecraft)**
+
+##### Misc:
+Fixed crash on server. This mod won't do anything on servers properly now.
+
+
 ### **(V.4.2.2 Changes) (1.19.2 Minecraft)**
 
 #### Mod Compat:
