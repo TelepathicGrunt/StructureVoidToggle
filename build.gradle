@@ -1,18 +1,15 @@
-import com.google.gson.Gson
-import net.fabricmc.loom.task.RemapJarTask
-
 buildscript {
 	repositories {
 		maven { url "https://plugins.gradle.org/m2/" }
 	}
 	dependencies {
-		classpath group: 'gradle.plugin.com.modrinth.minotaur', name: 'Minotaur', version: '1.2.1'
 	}
 }
 
 plugins {
 	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id "net.darkhax.curseforgegradle" version "1.0.7"
+	id "com.modrinth.minotaur" version "2.+"
 }
 
 apply plugin: 'maven-publish'
@@ -55,22 +52,36 @@ jar {
 
 apply from: 'gradle/maven.gradle'
 apply from: 'gradle/modrinth.gradle'
+
+String changelogText = file("CHANGELOG.md").getText('UTF-8')
+
+modrinth {
+	token = "$System.env.MODRINTH"
+	projectId = 'S1tbzJ6Y'
+	versionName = "Structure Void Toggle v${project.mod_version} Fabric"
+	versionNumber = project.version + "_fabric"
+	uploadFile = jar
+	versionType = "RELEASE"
+	changelog = changelogText
+	gameVersions = ["${project.minecraft_version}"]
+	loaders = ['fabric']
+}
+
 task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
 	apiToken = "$System.env.CURSEFORGEKEY"
 	int projectId = 357304
-	String changelogText = new File("CHANGELOG.md").getText('UTF-8')
 
 	def mainFile = upload(projectId, remapJar)
 	mainFile.changelog = changelogText
 	mainFile.changelogType = "markdown"
 	mainFile.releaseType = "release"
 	mainFile.displayName = "Structure Void Toggle v${project.mod_version} (Fabric)"
-	mainFile.addGameVersion("1.19.2")
+	mainFile.addGameVersion("${project.minecraft_version}")
 }
 
 task buildAndRelease{}
 tasks.publish.mustRunAfter tasks.build
 tasks.publishCurseForge.mustRunAfter tasks.publish
-tasks.publishModrinth.mustRunAfter tasks.publish
+tasks.modrinth.mustRunAfter tasks.publish
 tasks.publishCurseForge.dependsOn("remapJar")
-tasks.buildAndRelease.dependsOn(tasks.build, tasks.publish, tasks.publishCurseForge, tasks.publishModrinth)
+tasks.buildAndRelease.dependsOn(tasks.build, tasks.publish, tasks.publishCurseForge, tasks.modrinth)
