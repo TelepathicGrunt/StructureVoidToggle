@@ -53,8 +53,21 @@ jar {
 
 apply from: 'gradle/manifest.gradle'
 apply from: 'gradle/maven.gradle'
+apply from: 'gradle/modrinth.gradle'
 
 String changelogText = file("CHANGELOG.md").getText('UTF-8')
+
+modrinth {
+	token = "$System.env.MODRINTH"
+	projectId = 'S1tbzJ6Y'
+	versionName = "Structure Void Toggle v${project.mod_version} Fabric"
+	versionNumber = project.version + "_fabric"
+	uploadFile = jar
+	versionType = "RELEASE"
+	changelog = changelogText
+	gameVersions = ["${project.minecraft_version}"]
+	loaders = ['fabric']
+}
 
 task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
 	apiToken = "$System.env.CURSEFORGEKEY"
@@ -65,22 +78,7 @@ task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge)
 	mainFile.changelogType = "markdown"
 	mainFile.releaseType = "release"
 	mainFile.displayName = "Structure Void Toggle v${project.mod_version} (Fabric)"
-	mainFile.addGameVersion("1.19.3")
-}
-
-modrinth {
-	token = "$System.env.MODRINTH"
-	versionName = "Structure Void Toggle v${project.mod_version} Fabric"
-	versionNumber = project.version + "_fabric"
-	uploadFile = remapJar
-	projectId = 'S1tbzJ6Y'
-	versionType = "RELEASE"
-	changelog = changelogText
-	gameVersions = ["${project.minecraft_version}"]
-	loaders = ['fabric']
-	dependencies {
-		required.project "fabric-api"
-	}
+	mainFile.addGameVersion("${project.minecraft_version}")
 }
 
 task buildAndRelease{}
