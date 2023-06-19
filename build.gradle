@@ -61,7 +61,7 @@ modrinth {
 	projectId = 'S1tbzJ6Y'
 	versionName = "Structure Void Toggle v${project.mod_version} Fabric"
 	versionNumber = project.version + "_fabric"
-	uploadFile = jar
+	uploadFile = remapJar
 	versionType = "RELEASE"
 	changelog = changelogText
 	gameVersions = ["${project.minecraft_version}"]
