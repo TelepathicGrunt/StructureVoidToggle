@@ -195,7 +195,7 @@ public class ToggleBehavior {
 	public static void forceRenderInvisibleBlocks(RenderLevelStageEvent event) {
 		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS && FORCED_RENDERING) {
 			Player player = Minecraft.getInstance().player;
-			Level level = player.getLevel();
+			Level level = player.level();
 
 			float drawRadius;
 			if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {

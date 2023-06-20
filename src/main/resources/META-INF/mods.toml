@@ -13,9 +13,9 @@ description='''Make structure void less annoying to build with'''
 [[dependencies.structure_void_toggle]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.4,)"
+    versionRange="[1.20.1,)"
 
 [[dependencies.structure_void_toggle]]
     modId="forge"
     mandatory=true
-    versionRange="[45.0.1,)"
+    versionRange="[46.0.0,)"
