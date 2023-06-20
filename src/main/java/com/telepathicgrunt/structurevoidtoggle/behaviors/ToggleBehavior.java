@@ -194,7 +194,7 @@ public class ToggleBehavior
 	public static void forceRenderInvisibleBlocks(PoseStack poseStack, Camera camera, LevelRenderer levelRenderer) {
 		if (FORCED_RENDERING) {
 			Player player = Minecraft.getInstance().player;
-			Level level = player.getLevel();
+			Level level = player.level();
 
 			float drawRadius;
 			if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
