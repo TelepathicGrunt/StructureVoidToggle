@@ -18,8 +18,6 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -30,6 +28,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.joml.Vector4d;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 
@@ -196,17 +195,17 @@ public class ToggleBehavior
 			Player player = Minecraft.getInstance().player;
 			Level level = player.level();
 
-			float drawRadius;
+			double drawRadius;
 			if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
-				drawRadius = 0.4f;
+				drawRadius = 0.4D;
 			}
 			else {
-				drawRadius = 0.05f;
+				drawRadius = 0.05D;
 			}
-			float minCorner = 0.5f - drawRadius;
-			float maxCorner = 0.5f + drawRadius;
-			Vector4f vector4fMin = new Vector4f(minCorner, minCorner, minCorner, 1.0F);
-			Vector4f vector4fMax = new Vector4f(maxCorner, maxCorner, maxCorner, 1.0F);
+			double minCorner = 0.5D - drawRadius;
+			double maxCorner = 0.5D + drawRadius;
+			Vector4d vector4dMin = new Vector4d(minCorner, minCorner, minCorner, 1.0D);
+			Vector4d vector4dMax = new Vector4d(maxCorner, maxCorner, maxCorner, 1.0D);
 
 			int radius = 40;
 			Vec3 cameraPos = camera.getPosition();
@@ -216,7 +215,6 @@ public class ToggleBehavior
 
 			RenderType.cutout().setupRenderState();
 			poseStack.pushPose();
-			poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
 			Tesselator tesselator = Tesselator.getInstance();
 			RenderSystem.enableDepthTest();
@@ -299,12 +297,12 @@ public class ToggleBehavior
 								renderQuadBox(
 										bufferbuilder,
 										poseStack.last().pose(),
-										vector4fMin.x() + worldSpot.getX(),
-										vector4fMin.y() + worldSpot.getY(),
-										vector4fMin.z() + worldSpot.getZ(),
-										vector4fMax.x() + worldSpot.getX(),
-										vector4fMax.y() + worldSpot.getY(),
-										vector4fMax.z() + worldSpot.getZ(),
+										(float) (vector4dMin.x() + worldSpot.getX() - cameraPos.x()),
+										(float) (vector4dMin.y() + worldSpot.getY() - cameraPos.y()),
+										(float) (vector4dMin.z() + worldSpot.getZ() - cameraPos.z()),
+										(float) (vector4dMax.x() + worldSpot.getX() - cameraPos.x()),
+										(float) (vector4dMax.y() + worldSpot.getY() - cameraPos.y()),
+										(float) (vector4dMax.z() + worldSpot.getZ() - cameraPos.z()),
 										(int) (red * distanceMult),
 										(int) (green * distanceMult),
 										(int) (blue * distanceMult),
@@ -314,12 +312,12 @@ public class ToggleBehavior
 								renderLineBox(
 										bufferbuilder,
 										poseStack.last().pose(),
-										vector4fMin.x() + worldSpot.getX(),
-										vector4fMin.y() + worldSpot.getY(),
-										vector4fMin.z() + worldSpot.getZ(),
-										vector4fMax.x() + worldSpot.getX(),
-										vector4fMax.y() + worldSpot.getY(),
-										vector4fMax.z() + worldSpot.getZ(),
+										(float) (vector4dMin.x() + worldSpot.getX() - cameraPos.x()),
+										(float) (vector4dMin.y() + worldSpot.getY() - cameraPos.y()),
+										(float) (vector4dMin.z() + worldSpot.getZ() - cameraPos.z()),
+										(float) (vector4dMax.x() + worldSpot.getX() - cameraPos.x()),
+										(float) (vector4dMax.y() + worldSpot.getY() - cameraPos.y()),
+										(float) (vector4dMax.z() + worldSpot.getZ() - cameraPos.z()),
 										red,
 										green,
 										blue,
