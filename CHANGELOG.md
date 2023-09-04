@@ -1,10 +1,4 @@
-## **(V.4.2.6 Changes) (1.20.1 Minecraft)**
-
-##### Rendering:
-Fixed outline/box drawing going nuts at large distances from world origin
-
-
-## **(V.4.2.5 Changes) (1.20.1 Minecraft)**
+## **(V.4.2.7 Changes) (1.20.1 Minecraft)**
 
 ##### Misc:
-Bump versioning to 1.20.1 explicitly
+Removed local capture from a mixin since I don't need any locals. Might solve rare crashes on Quilt.

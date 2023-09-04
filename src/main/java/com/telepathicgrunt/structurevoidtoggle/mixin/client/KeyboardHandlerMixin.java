@@ -11,9 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(KeyboardHandler.class)
 public class KeyboardHandlerMixin {
 
-    @Inject(method = "keyPress",
-            at = @At(value = "TAIL"),
-            locals = LocalCapture.CAPTURE_FAILSOFT)
+    @Inject(method = "keyPress", at = @At(value = "TAIL"))
     private void keyPress(long window, int key, int scancode, int i, int j, CallbackInfo ci) {
         ToggleBehavior.toggle(key);
     }
