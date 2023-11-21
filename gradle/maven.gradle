@@ -6,7 +6,7 @@ publishing {
             artifact jar
 
             pom {
-                name = 'StructureVoidToggle-Forge'
+                name = 'StructureVoidToggle-Neoforge'
                 description = 'Toggle Structure Void Hitboxes!'
                 url = 'https://github.com/TelepathicGrunt/StructureVoidToggle'
 

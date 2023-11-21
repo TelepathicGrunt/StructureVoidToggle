@@ -1,10 +1,4 @@
-## **(V.4.2.6 Changes) (1.20.1 Minecraft)**
+## **(V.4.3.0 Changes) (1.20.2 Minecraft)**
 
-##### Rendering:
-Fixed outline/box drawing going nuts at large distances from world origin
-
-
-## **(V.4.2.4 Changes) (1.20.1 Minecraft)**
-
-##### Misc:
-Bump versioning to 1.20.1 explicitly
+##### Major:
+Updated to Neoforge!

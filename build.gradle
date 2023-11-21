@@ -1,69 +1,50 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://maven.parchmentmc.org' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.parchmentmc:librarian:1.+'
-		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-	}
-}
-
 plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.gradle.userdev' version '7.0.45'
     id "net.darkhax.curseforgegradle" version "1.0.7"
     id "com.modrinth.minotaur" version "2.+"
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: "com.modrinth.minotaur"
 
 version = "${mod_version}+${mc_version}"
 group = "com.telepathicgrunt"
-archivesBaseName = "${modid}-forge"
+archivesBaseName = "${modid}-neoforge"
+
+repositories {
+    mavenLocal()
+}
+
+base {
+    archivesName = modid
+}
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-minecraft {
-    mappings channel: "official", version: "${mc_version}"
-    //mappings channel: 'parchment', version: '2022.12.18-1.19.3'
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-   
-    runs {
-        client {
-            workingDirectory project.file('run')
-            arg "-mixin.config=" + project.getProperty('modid') + ".mixins.json"
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods { structure_void_toggle { source sourceSets.main } }
-        }
+runs {
+    configureEach {
+        modSource project.sourceSets.main
+    }
 
-        server {
-            workingDirectory project.file('run')
-            arg "-mixin.config=" + project.getProperty('modid') + ".mixins.json"
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods { structure_void_toggle { source sourceSets.main } }
-        }
+    client {
+    }
+
+    server {
+        programArgument '--nogui'
     }
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    implementation "net.neoforged:neoforge:${neo_version}"
 }
 
-mixin {
-    add sourceSets.main, "${modid}.refmap.json"
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
-apply from: 'gradle/processresources.gradle'
 apply from: 'gradle/manifest.gradle'
 apply from: 'gradle/maven.gradle'
 
@@ -72,13 +53,13 @@ String changelogText = file("CHANGELOG.md").getText('UTF-8')
 modrinth {
     token = "$System.env.MODRINTH"
     projectId = 'S1tbzJ6Y'
-    versionName = "Structure Void Toggle v${project.mod_version} Forge"
-    versionNumber = project.version + "_forge"
+    versionName = "Structure Void Toggle v${project.mod_version} Neoforge"
+    versionNumber = project.version + "_neoforge"
     uploadFile = jar
     versionType = "RELEASE"
     changelog = changelogText
     gameVersions = ["${project.mc_version}"]
-    loaders = ['forge']
+    loaders = ['neoforge']
 }
 
 task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
@@ -89,13 +70,13 @@ task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge)
     mainFile.changelog = changelogText
     mainFile.changelogType = "markdown"
     mainFile.releaseType = "release"
-    mainFile.displayName = "Structure Void Toggle v${project.mod_version} (Forge)"
+    mainFile.displayName = "Structure Void Toggle v${project.mod_version} (Neoforge)"
     mainFile.addGameVersion("${project.mc_version}")
 }
 
 task checkForRefmap() {
-    if (file("./build/libs/structure_void_toggle_forge-${project.mod_version}+${project.mc_version}.jar").exists()) {
-        assert zipTree("./build/libs/structure_void_toggle_forge-${project.mod_version}+${project.mc_version}.jar")
+    if (file("./build/libs/structure_void_toggle_neoforge-${project.mod_version}+${project.mc_version}.jar").exists()) {
+        assert zipTree("./build/libs/structure_void_toggle_neoforge-${project.mod_version}+${project.mc_version}.jar")
                 .matching { include "structure_void_toggle.refmap.json" }.getSingleFile() != null
     }
 }
