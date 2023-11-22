@@ -1,5 +1,5 @@
 modLoader="javafml" #mandatory
-loaderVersion="[38,)"
+loaderVersion="[1,)"
 license="MIT License"
 
 [[mods]] #mandatory
@@ -11,7 +11,7 @@ authors="TelepathicGrunt"
 description='''Make structure void less annoying to build with'''
 
 [[mixins]]
-config = "structure_void_toggle.mixins.json"
+    config = "structure_void_toggle.mixins.json"
 
 [[dependencies.structure_void_toggle]]
     modId="minecraft"
