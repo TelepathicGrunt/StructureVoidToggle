@@ -26,7 +26,7 @@ For developers that want to add StructureVoidToggle to their mod's workspace:
 
 &nbsp;
 
-Don't forget to change \<modversion> with the actual latest version of this mod.
+Don't forget to change &lt;modversion> with the actual latest version of this mod.
 
 <blockquote>dependencies {
 
@@ -34,7 +34,7 @@ Don't forget to change \<modversion> with the actual latest version of this mod.
 &nbsp; ...
 
 
-&nbsp; implementation fg.deobf("com.telepathicgrunt:StructureVoidToggle-Fabric:\<modversion>+1.20.6")
+&nbsp; implementation fg.deobf("com.telepathicgrunt:StructureVoidToggle-Fabric:&lt;modversion>+1.20.6")
 
 
 }</blockquote>
