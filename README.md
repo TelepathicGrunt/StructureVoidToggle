@@ -1,5 +1,4 @@
     Structure Void Toggle
-    Made for Minecraft v.1.19
     Created by TelepathicGrunt
 
 First created on 1/2/2020
@@ -30,7 +29,7 @@ Don't forget to change \<modversion> with the actual latest version of this mod.
 &nbsp; ...
 
 
-&nbsp; implementation fg.deobf("com.telepathicgrunt:StructureVoidToggle-Neoforge:\<modversion>+1.20.2")
+&nbsp; implementation fg.deobf("com.telepathicgrunt:StructureVoidToggle-Neoforge:\<modversion>+1.20.6")
 
 
 }</blockquote>
