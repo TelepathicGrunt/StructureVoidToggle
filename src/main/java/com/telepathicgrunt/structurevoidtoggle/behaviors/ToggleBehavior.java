@@ -191,7 +191,7 @@ public class ToggleBehavior {
 	 * Switches between forced rendering when DELETE is pressed.
 	 */
 	public static void forceRenderInvisibleBlocks(RenderLevelStageEvent event) {
-		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS && FORCED_RENDERING) {
+		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES && FORCED_RENDERING) {
 			Player player = Minecraft.getInstance().player;
 			Level level = player.level();
 

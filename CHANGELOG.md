@@ -1,4 +1,4 @@
-## **(V.4.3.0 Changes) (1.20.2 Minecraft)**
+## **(V.4.3.1 Changes) (1.20.6 Minecraft)**
 
 ##### Major:
-Updated to Neoforge!
+Updated to 1.20.6 MC
