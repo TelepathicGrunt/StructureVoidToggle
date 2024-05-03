@@ -5,13 +5,13 @@ import com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BarrierBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -49,12 +49,12 @@ public class LightBlockMixin extends Block implements ShapeInterface {
     }
 
     @Override
-    public InteractionResult use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
-        if (!player.getItemInHand(interactionHand).is(Items.LIGHT)) {
-            return InteractionResult.PASS;
+    public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
+        if (!heldItem.is(Items.LIGHT)) {
+            return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
         else {
-            return super.use(blockState, level, blockPos, player, interactionHand, blockHitResult);
+            return super.useItemOn(heldItem, blockState, level, blockPos, player, interactionHand, blockHitResult);
         }
     }
 
