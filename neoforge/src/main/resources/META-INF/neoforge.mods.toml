@@ -4,7 +4,7 @@ license="MIT License"
 
 [[mods]]
     modId="structure_void_toggle"
-    version="${file.jarVersion}"
+    version="${version}"
     displayName="Structure Void Toggle"
     displayURL="https://www.curseforge.com/minecraft/mc-mods/structure-void-toggle"
     authors="TelepathicGrunt"
@@ -16,4 +16,4 @@ license="MIT License"
 [[dependencies.structure_void_toggle]]
     modId="minecraft"
     type="required"
-    versionRange="[1.20.5,)"
+    versionRange="[1.21,)"

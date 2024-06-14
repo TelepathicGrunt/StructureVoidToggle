@@ -1,0 +1,28 @@
+package com.telepathicgrunt.structurevoidtoggle.fabric;
+
+import com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+
+import static com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior.KEY_BIND_STRUCTURE_VOID_FORCED_RENDER_TOGGLE;
+import static com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior.KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE;
+import static com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior.KEY_BIND_STRUCTURE_VOID_TOGGLE;
+
+@Environment(EnvType.CLIENT)
+public class StructureVoidToggleClient implements ClientModInitializer {
+
+    @Override
+    public void onInitializeClient() {
+        WorldRenderEvents.AFTER_TRANSLUCENT.register((worldRenderContext) -> {
+            ToggleBehavior.forceRenderInvisibleBlocks(worldRenderContext.camera(), worldRenderContext.matrixStack(), worldRenderContext.worldRenderer(), true);
+
+        });
+
+        KeyBindingHelper.registerKeyBinding(KEY_BIND_STRUCTURE_VOID_TOGGLE);
+        KeyBindingHelper.registerKeyBinding(KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE);
+        KeyBindingHelper.registerKeyBinding(KEY_BIND_STRUCTURE_VOID_FORCED_RENDER_TOGGLE);
+    }
+}

@@ -1,91 +1,128 @@
 plugins {
-    id 'java-library'
-    id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.142'
+    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
     id "me.modmuss50.mod-publish-plugin" version "0.5.1"
 }
 
-apply plugin: "me.modmuss50.mod-publish-plugin"
-
-version = "${mod_version}+${mc_version}"
-group = "com.telepathicgrunt"
-archivesBaseName = "${modid}-neoforge"
-
-repositories {
-    mavenLocal()
+architectury {
+    minecraft = rootProject.minecraft_version
 }
 
-base {
-    archivesName = modid
-}
+subprojects {
+    apply plugin: "dev.architectury.loom"
+    apply plugin: "me.modmuss50.mod-publish-plugin"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+    version = "${rootProject.mod_version}+${rootProject.minecraft_version}-${name}"
 
-runs {
-    configureEach {
-        modSource project.sourceSets.main
+    loom {
+        silentMojangMappingsLicense()
     }
 
-    client {
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        mappings loom.officialMojangMappings()
     }
 
-    server {
-        programArgument '--nogui'
-    }
-}
+    Map<String, Map<String, String>> platformSettings = [
+            "fabric": [
+                    "curse-id": "357304",
+                    "modrinth-id": "S1tbzJ6Y"
+            ],
+            "neoforge": [
+                    "curse-id": "357304",
+                    "modrinth-id": "S1tbzJ6Y"
+            ]
+    ]
 
-dependencies {
-    implementation "net.neoforged:neoforge:${neo_version}"
-}
+    Map<String, Map<String, Boolean>> platformDependencies = [
+            "fabric": [
+                    "fabric-api": true
+            ],
+            "neoforge": []
+    ]
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
+    var env = System.getenv()
+    def uploadSettings = platformSettings.get(name)
+    def uploadDependencies = platformDependencies.get(name)
 
-apply from: 'gradle/manifest.gradle'
-apply from: 'gradle/maven.gradle'
+    if (uploadSettings != null && uploadDependencies != null) {
 
-String changelogText = file("CHANGELOG.md").getText('UTF-8')
-Map<String, String> env = System.getenv()
+        File changeLog = rootProject.file("CHANGELOG.md")
+        String changelogText = changeLog.exists() ? changeLog.text : ""
 
-publishMods {
-    file = jar.archiveFile
-    type = STABLE
+        publishMods {
+            file = tasks.remapJar.archiveFile
+            type = STABLE
+            changelog = changelogText
 
-    displayName = "Structure Void Toggle v${project.mod_version} Neoforge"
-    version = project.version + "_neoforge"
+            displayName = "Structure Void Toggle v${project.mod_version} Neoforge"
+            version = "${project.version}"
+            modLoaders.add(name)
 
-    changelog = changelogText
-    modLoaders.add("neoforge")
+            if (env.CURSEFORGEKEY) {
+                curseforge {
+                    accessToken = env.CURSEFORGEKEY
+                    projectId = uploadSettings["curse-id"]
+                    minecraftVersions.add(rootProject.minecraft_version)
 
-    if (env.CURSEFORGEKEY) {
-        curseforge {
-            accessToken = env.CURSEFORGEKEY
-            projectId = '357304'
-            minecraftVersions.add("1.21")
+                    if (uploadDependencies.size() > 0) {
+                        uploadDependencies.each { dep, required ->
+                            if (required) {
+                                requires(dep)
+                            }
+                            else {
+                                optional(dep)
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (env.MODRINTH_TOKEN) {
+                modrinth {
+                    accessToken = env.MODRINTH_TOKEN
+                    projectId = uploadSettings["modrinth-id"]
+                    minecraftVersions.add(rootProject.minecraft_version)
+
+                    dependencies {
+                        uploadDependencies.each { dep, required ->
+                            if (required) {
+                                requires(dep)
+                            } else {
+                                optional(dep)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
+}
 
-    if (env.MODRINTH_TOKEN) {
-        modrinth {
-            accessToken = env.MODRINTH_TOKEN
-            projectId = 'S1tbzJ6Y'
-            minecraftVersions.add("1.21")
-        }
+allprojects {
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
+
+    archivesBaseName = rootProject.modid
+    version = "${rootProject.mod_version}+${rootProject.minecraft_version}-${name}"
+    group = rootProject.maven_group
+
+    repositories {
+        maven { url "https://maven.architectury.dev/" }
+        maven { url "https://maven.neoforged.net/releases/" }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        options.release = 21
+    }
+
+    java {
+        withSourcesJar()
     }
 }
 
-task checkForRefmap() {
-    if (file("./build/libs/structure_void_toggle_neoforge-${project.mod_version}+${project.mc_version}.jar").exists()) {
-        assert zipTree("./build/libs/structure_void_toggle_neoforge-${project.mod_version}+${project.mc_version}.jar")
-                .matching { include "structure_void_toggle.refmap.json" }.getSingleFile() != null
-    }
+task buildAndReleaseAll{
+    dependsOn(':neoforge:buildAndRelease', ':fabric:buildAndRelease')
 }
-
-tasks.register('buildAndRelease') {}
-tasks.checkForRefmap.mustRunAfter tasks.build
-tasks.publish.mustRunAfter tasks.checkForRefmap
-tasks.publishMods.mustRunAfter tasks.publish
-tasks.buildAndRelease.dependsOn(tasks.build, tasks.checkForRefmap, tasks.publish, tasks.publishMods)

@@ -9,10 +9,13 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.telepathicgrunt.structurevoidtoggle.mixin.StructureVoidBlockAccessor;
 import com.telepathicgrunt.structurevoidtoggle.mixin.client.LevelRendererAccessor;
+import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -24,7 +27,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
 import org.joml.Vector4d;
 import org.lwjgl.glfw.GLFW;
@@ -191,8 +193,8 @@ public class ToggleBehavior {
 	/**
 	 * Switches between forced rendering when DELETE is pressed.
 	 */
-	public static void forceRenderInvisibleBlocks(RenderLevelStageEvent event) {
-		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES && FORCED_RENDERING) {
+	public static void forceRenderInvisibleBlocks(Camera camera, PoseStack poseStack, LevelRenderer levelRenderer, boolean clearRenderState) {
+		if (FORCED_RENDERING) {
 			Player player = Minecraft.getInstance().player;
 			Level level = player.level();
 
@@ -209,12 +211,11 @@ public class ToggleBehavior {
 			Vector4d vector4dMax = new Vector4d(maxCorner, maxCorner, maxCorner, 1.0D);
 
 			int radius = 40;
-			Vec3 cameraPos = event.getCamera().getPosition();
+			Vec3 cameraPos = camera.getPosition();
 			BlockPos centerPos = BlockPos.containing(cameraPos);
 			HashMap<ChunkPos, Boolean> chunkAllowedMap = new HashMap<>();
 			BlockPos.MutableBlockPos worldSpot = new BlockPos.MutableBlockPos();
 
-			PoseStack poseStack = event.getPoseStack();
 			poseStack.pushPose();
 
 			Tesselator tesselator = Tesselator.getInstance();
@@ -258,7 +259,7 @@ public class ToggleBehavior {
 							break;
 						}
 
-						if (!((LevelRendererAccessor)event.getLevelRenderer()).getCullingFrustum().isVisible(new AABB(
+						if (!((LevelRendererAccessor)levelRenderer).getCullingFrustum().isVisible(new AABB(
 								worldSpot.getX() + minCorner,
 								worldSpot.getY() + minCorner,
 								worldSpot.getZ() + minCorner,
@@ -334,6 +335,10 @@ public class ToggleBehavior {
 				BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
 			}
 			poseStack.popPose();
+
+			if (clearRenderState) {
+				RenderType.cutout().clearRenderState();
+			}
 		}
 	}
 
