@@ -68,7 +68,7 @@ publishMods {
         }
     }
 
-    if (env.MODRINTH) {
+    if (env.MODRINTH_TOKEN) {
         modrinth {
             accessToken = env.MODRINTH_TOKEN
             projectId = 'S1tbzJ6Y'
