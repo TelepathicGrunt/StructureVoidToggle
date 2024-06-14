@@ -3,6 +3,7 @@ package com.telepathicgrunt.structurevoidtoggle.behaviors;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -219,14 +220,15 @@ public class ToggleBehavior
 			Tesselator tesselator = Tesselator.getInstance();
 			RenderSystem.enableDepthTest();
 			RenderSystem.setShader(GameRenderer::getPositionColorShader);
-			BufferBuilder bufferbuilder = tesselator.getBuilder();
+			BufferBuilder bufferbuilder;
 			if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
-				bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+				bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 			}
 			else {
-				bufferbuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+				bufferbuilder = tesselator.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
 			}
 
+			boolean addedVertex = false;
 			int radiusSq = radius * radius;
 			for (int x = -radius; x <= radius; x++) {
 				for (int z = -radius; z <= radius; z++) {
@@ -307,6 +309,7 @@ public class ToggleBehavior
 										(int) (green * distanceMult),
 										(int) (blue * distanceMult),
 										alpha);
+								addedVertex = true;
 							}
 							else {
 								renderLineBox(
@@ -322,73 +325,76 @@ public class ToggleBehavior
 										green,
 										blue,
 										alpha);
+								addedVertex = true;
 							}
 						}
 					}
 				}
 			}
-			tesselator.end();
+			if (addedVertex) {
+				BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+			}
 			poseStack.popPose();
 			RenderType.cutout().clearRenderState();
 		}
 	}
 
 	private static void renderQuadBox(BufferBuilder builder, Matrix4f pose, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int red, int green, int blue, int alpha) {
-		builder.vertex(pose, maxX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, maxY, minZ).color(red, green, blue, alpha).normal(1.0F, 1.0F, 0.0F).endVertex();
+		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, minX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
+		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 1.0F, 0.0F);
 
-		builder.vertex(pose, maxX, maxY, maxZ).color(red, green, blue, alpha).normal(1.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, minY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, minY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 1.0F, 0.0F);
+		builder.addVertex(pose, minX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
+		builder.addVertex(pose, minX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, maxX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
 
-		builder.vertex(pose, maxX, minY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(pose, minX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(pose, minX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
+		builder.addVertex(pose, maxX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 1.0F);
+		builder.addVertex(pose, minX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
+		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
 
-		builder.vertex(pose, maxX, maxY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, maxY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(pose, maxX, maxY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 1.0F).endVertex();
+		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, minX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, minX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
+		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 1.0F);
 
-		builder.vertex(pose, minX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(pose, minX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 1.0F).endVertex();
-		builder.vertex(pose, minX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
+		builder.addVertex(pose, minX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
+		builder.addVertex(pose, minX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 1.0F);
+		builder.addVertex(pose, minX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
 
-		builder.vertex(pose, maxX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 1.0F).endVertex();
-		builder.vertex(pose, maxX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(pose, maxX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
+		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 1.0F);
+		builder.addVertex(pose, maxX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
+		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
 	}
 
 	private static void renderLineBox(BufferBuilder builder, Matrix4f pose, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int red, int green, int blue, int alpha) {
-		builder.vertex(pose, minX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, minY, minZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(pose, minX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(pose, maxX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, maxY, minZ).color(red, green, blue, alpha).normal(-1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, maxY, minZ).color(red, green, blue, alpha).normal(-1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(pose, minX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(pose, minX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, -1.0F, 0.0F).endVertex();
-		builder.vertex(pose, minX, minY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, minY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, -1.0F).endVertex();
-		builder.vertex(pose, maxX, minY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, -1.0F).endVertex();
-		builder.vertex(pose, minX, maxY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, maxY, maxZ).color(red, green, blue, alpha).normal(1.0F, 0.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, minY, maxZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-		builder.vertex(pose, maxX, maxY, minZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
-		builder.vertex(pose, maxX, maxY, maxZ).color(red, green, blue, alpha).normal(0.0F, 0.0F, 1.0F).endVertex();
+		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
+		builder.addVertex(pose, minX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
+		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
+		builder.addVertex(pose, minX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
+		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
+		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
+		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(-1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, minX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(-1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, minX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
+		builder.addVertex(pose, minX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
+		builder.addVertex(pose, minX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, -1.0F, 0.0F);
+		builder.addVertex(pose, minX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, -1.0F, 0.0F);
+		builder.addVertex(pose, minX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, maxX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, maxX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, -1.0F);
+		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, -1.0F);
+		builder.addVertex(pose, minX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
+		builder.addVertex(pose, maxX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
+		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
+		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
+		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
 	}
 }
