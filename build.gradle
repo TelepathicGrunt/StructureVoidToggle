@@ -55,6 +55,7 @@ publishMods {
     type = STABLE
 
     displayName = "Structure Void Toggle v${project.mod_version} Neoforge"
+    version = project.version + "_neoforge"
 
     changelog = changelogText
     modLoaders.add("neoforge")
@@ -83,7 +84,7 @@ task checkForRefmap() {
     }
 }
 
-task buildAndRelease{}
+tasks.register('buildAndRelease') {}
 tasks.checkForRefmap.mustRunAfter tasks.build
 tasks.publish.mustRunAfter tasks.checkForRefmap
 tasks.publishMods.mustRunAfter tasks.publish

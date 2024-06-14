@@ -337,7 +337,6 @@ public class ToggleBehavior {
 		}
 	}
 
-
 	private static void renderQuadBox(BufferBuilder builder, Matrix4f pose, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int red, int green, int blue, int alpha) {
 		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
 		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
