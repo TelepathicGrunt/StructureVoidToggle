@@ -55,7 +55,7 @@ subprojects {
             type = STABLE
             changelog = changelogText
 
-            displayName = "Structure Void Toggle v${project.mod_version} Neoforge"
+            displayName = "Structure Void Toggle v${project.mod_version} ${name.capitalize()}"
             version = "${project.version}"
             modLoaders.add(name)
 
