@@ -73,7 +73,7 @@ publishing {
                 builtBy remapSourcesJar
             }
 
-            artifactId = "$rootProject.name"
+            artifactId = "$rootProject.name-Fabric"
 
             pom {
                 name = 'StructureVoidToggle-Fabric'

@@ -82,7 +82,7 @@ publishing {
                 builtBy remapSourcesJar
             }
 
-            artifactId = "$rootProject.name"
+            artifactId = "$rootProject.name-Neoforge"
 
             pom {
                 name = 'StructureVoidToggle-Neoforge'

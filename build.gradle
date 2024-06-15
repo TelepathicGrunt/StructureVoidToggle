@@ -12,7 +12,7 @@ subprojects {
     apply plugin: "dev.architectury.loom"
     apply plugin: "me.modmuss50.mod-publish-plugin"
 
-    version = "${rootProject.mod_version}+${rootProject.minecraft_version}-${name}"
+    version = "${rootProject.mod_version}+${rootProject.minecraft_version}"
 
     loom {
         silentMojangMappingsLicense()
@@ -56,7 +56,7 @@ subprojects {
             changelog = changelogText
 
             displayName = "Structure Void Toggle v${project.mod_version} ${name.capitalize()}"
-            version = "${project.version}"
+            version = "${project.version}-${name}"
             modLoaders.add(name)
 
             if (env.CURSEFORGEKEY) {
@@ -105,7 +105,7 @@ allprojects {
     apply plugin: "maven-publish"
 
     archivesBaseName = rootProject.modid
-    version = "${rootProject.mod_version}+${rootProject.minecraft_version}-${name}"
+    version = "${rootProject.mod_version}+${rootProject.minecraft_version}"
     group = rootProject.maven_group
 
     repositories {
