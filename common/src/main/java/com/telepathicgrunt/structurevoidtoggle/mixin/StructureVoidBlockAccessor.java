@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(StructureVoidBlock.class)
 public interface StructureVoidBlockAccessor {
     @Mutable
-    @Accessor
-    static void setSHAPE(VoxelShape SHAPE) {
+    @Accessor("SHAPE")
+    static void setSHAPE(VoxelShape shape) {
         throw new UnsupportedOperationException();
     }
 }
