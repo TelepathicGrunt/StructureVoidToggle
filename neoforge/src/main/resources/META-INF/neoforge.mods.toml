@@ -16,4 +16,4 @@ license="MIT License"
 [[dependencies.structure_void_toggle]]
     modId="minecraft"
     type="required"
-    versionRange="[1.21,)"
+    versionRange="[1.21.3,)"

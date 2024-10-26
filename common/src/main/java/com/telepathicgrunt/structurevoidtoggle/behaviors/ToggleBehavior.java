@@ -13,6 +13,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
@@ -219,7 +220,7 @@ public class ToggleBehavior {
 			poseStack.pushPose();
 
 			Tesselator tesselator = Tesselator.getInstance();
-			RenderSystem.setShader(GameRenderer::getPositionColorShader);
+			RenderSystem.setShader(CoreShaders.POSITION_COLOR);
 			BufferBuilder bufferbuilder;
 			if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
 				bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);

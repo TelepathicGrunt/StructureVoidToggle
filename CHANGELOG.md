@@ -1,4 +1,4 @@
-## **(V.4.4.2 Changes) (1.21.1 Minecraft)**
+## **(V.4.5.0 Changes) (1.21.3 Minecraft)**
 
-##### Misc:
-Fixed crash due to missing refmap link
+##### Major:
+Updated to 1.21.3
