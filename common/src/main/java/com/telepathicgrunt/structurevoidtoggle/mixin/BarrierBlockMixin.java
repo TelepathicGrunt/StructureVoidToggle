@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Unique;
 public class BarrierBlockMixin extends Block implements ShapeInterface {
 
     @Unique
-    private static VoxelShape SHAPE = Block.box(0, 0, 0, 16, 16, 16);
+    private static VoxelShape STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(0, 0, 0, 16, 16, 16);
 
     public BarrierBlockMixin(Properties properties) {
         super(properties);
@@ -23,17 +23,17 @@ public class BarrierBlockMixin extends Block implements ShapeInterface {
 
     @Override
     public VoxelShape getShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {
-        return SHAPE;
+        return STRUCTURE_VOID_TOGGLE$SHAPE;
     }
 
     @Override
     public void setShape(VoxelShape shape) {
-        SHAPE = shape;
+        STRUCTURE_VOID_TOGGLE$SHAPE = shape;
     }
 
     @Override
     public VoxelShape getShape() {
-        return SHAPE;
+        return STRUCTURE_VOID_TOGGLE$SHAPE;
     }
 }
 

@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.Unique;
 public class LightBlockMixin extends Block implements ShapeInterface {
 
     @Unique
-    private static VoxelShape SHAPE = Block.box(-2, -2, -2, -1, -1, -1);
+    private static VoxelShape STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(-2, -2, -2, -1, -1, -1);
 
     public LightBlockMixin(Properties properties) {
         super(properties);
@@ -34,15 +34,15 @@ public class LightBlockMixin extends Block implements ShapeInterface {
 
     @Override
     public VoxelShape getShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {
-        if (SHAPE.isEmpty() || SHAPE.max(Direction.Axis.X) >= 0) {
-            return SHAPE;
+        if (STRUCTURE_VOID_TOGGLE$SHAPE.isEmpty() || STRUCTURE_VOID_TOGGLE$SHAPE.max(Direction.Axis.X) >= 0) {
+            return STRUCTURE_VOID_TOGGLE$SHAPE;
         }
         return collisionContext.isHoldingItem(Items.LIGHT) ? Shapes.block() : Shapes.empty();
     }
 
     @Override
     public VoxelShape getCollisionShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {
-        if (SHAPE.isEmpty() || SHAPE.max(Direction.Axis.X) >= 0) {
+        if (STRUCTURE_VOID_TOGGLE$SHAPE.isEmpty() || STRUCTURE_VOID_TOGGLE$SHAPE.max(Direction.Axis.X) >= 0) {
             return Shapes.empty();
         }
         return super.getCollisionShape(blockState, blockGetter, blockPos, collisionContext);
@@ -68,12 +68,12 @@ public class LightBlockMixin extends Block implements ShapeInterface {
 
     @Override
     public void setShape(VoxelShape shape) {
-        SHAPE = shape;
+        STRUCTURE_VOID_TOGGLE$SHAPE = shape;
     }
 
     @Override
     public VoxelShape getShape() {
-        return SHAPE;
+        return STRUCTURE_VOID_TOGGLE$SHAPE;
     }
 }
 

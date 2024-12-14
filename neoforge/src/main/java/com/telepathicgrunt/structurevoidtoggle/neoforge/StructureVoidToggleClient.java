@@ -24,7 +24,7 @@ public class StructureVoidToggleClient {
     }
 
     public static void forceRenderInvisibleBlocks(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
             ToggleBehavior.forceRenderInvisibleBlocks(event.getCamera(), event.getPoseStack(), event.getLevelRenderer(), false);
         }
     }

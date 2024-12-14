@@ -5,7 +5,6 @@
   "mixins": [
     "BarrierBlockMixin",
     "LightBlockMixin",
-    "StructureVoidBlockAccessor",
     "StructureVoidBlockMixin"
   ],
   "client": [

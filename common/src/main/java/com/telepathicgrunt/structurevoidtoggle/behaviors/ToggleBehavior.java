@@ -7,14 +7,12 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.telepathicgrunt.structurevoidtoggle.mixin.StructureVoidBlockAccessor;
 import com.telepathicgrunt.structurevoidtoggle.mixin.client.LevelRendererAccessor;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.CoreShaders;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
@@ -28,6 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Matrix4f;
 import org.joml.Vector4d;
 import org.lwjgl.glfw.GLFW;
@@ -82,6 +81,9 @@ public class ToggleBehavior {
 			"key.non_replacing", GLFW.GLFW_KEY_PAGE_UP, "key.categories.structure_void_toggle"
 	);
 
+	// Holds Structure Void Block's shape
+	public static VoxelShape STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(5.0, 5.0, 5.0, 11.0, 11.0, 11.0);
+
 	/**
 	 * Toggles settings for the relevant keypress.
 	 */
@@ -116,25 +118,25 @@ public class ToggleBehavior {
 		switch (MODE) {
 			case DEFAULT -> {
 				player.displayClientMessage(Component.translatable("system.structure_void_toggle.default_hitbox"), true);
-				StructureVoidBlockAccessor.setSHAPE(Block.box(5, 5, 5, 11, 11, 11));
+				STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(5, 5, 5, 11, 11, 11);
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 16, 16, 16));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(-2, -2, -2, -1, -1, -1));
 			}
 			case NO_HITBOX -> {
 				player.displayClientMessage(Component.translatable("system.structure_void_toggle.no_hitbox"), true);
-				StructureVoidBlockAccessor.setSHAPE(Block.box(0, 0, 0, 0, 0, 0));
+				STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(0, 0, 0, 0, 0, 0);
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 0, 0, 0));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(0, 0, 0, 0, 0, 0));
 			}
 			case SMALL_HITBOX -> {
 				player.displayClientMessage(Component.translatable("system.structure_void_toggle.small_hitbox"), true);
-				StructureVoidBlockAccessor.setSHAPE(Block.box(5, 5, 5, 11, 11, 11));
+				STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(5, 5, 5, 11, 11, 11);
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(5, 5, 5, 11, 11, 11));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(5, 5, 5, 11, 11, 11));
 			}
 			case FULL_HITBOX -> {
 				player.displayClientMessage(Component.translatable("system.structure_void_toggle.full_hitbox"), true);
-				StructureVoidBlockAccessor.setSHAPE(Block.box(0, 0, 0, 16, 16, 16));
+				STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(0, 0, 0, 16, 16, 16);
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 16, 16, 16));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(0, 0, 0, 16, 16, 16));
 			}

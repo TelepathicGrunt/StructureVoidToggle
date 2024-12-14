@@ -16,11 +16,6 @@ public class StructureVoidToggleClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        WorldRenderEvents.AFTER_TRANSLUCENT.register((worldRenderContext) -> {
-            ToggleBehavior.forceRenderInvisibleBlocks(worldRenderContext.camera(), worldRenderContext.matrixStack(), worldRenderContext.worldRenderer(), true);
-
-        });
-
         KeyBindingHelper.registerKeyBinding(KEY_BIND_STRUCTURE_VOID_TOGGLE);
         KeyBindingHelper.registerKeyBinding(KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE);
         KeyBindingHelper.registerKeyBinding(KEY_BIND_STRUCTURE_VOID_FORCED_RENDER_TOGGLE);

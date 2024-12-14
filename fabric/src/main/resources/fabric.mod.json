@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "id": "structure_void_toggle",
+  "id": "${mod_id}",
   "version": "${version}",
 
-  "name": "Structure Void Toggle",
-  "description": "Toggle the void!",
+  "name": "${mod_name}",
+  "description": "${description}",
   "authors": [
-    "TelepathicGrunt"
+    "${mod_author}"
   ],
   "contact": {},
 
@@ -20,12 +20,13 @@
     ]
   },
   "mixins": [
-    "structure_void_toggle.mixins.json"
+    "${mod_id}.mixins.json",
+    "${mod_id}_fabric.mixins.json"
   ],
 
   "depends": {
-    "fabricloader": "*",
-    "minecraft": ">=1.21.3",
-    "fabric": "*"
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "minecraft": ">=${minecraft_version}"
   }
 }

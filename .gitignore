@@ -12,6 +12,8 @@ out
 *.iws
 *.iml
 .idea
+.idea/*
+!.idea/scopes
 
 # gradle
 build
@@ -20,6 +22,7 @@ build
 # other
 eclipse
 run
+runs
 .gitattributes
 deps
 common/src/generated

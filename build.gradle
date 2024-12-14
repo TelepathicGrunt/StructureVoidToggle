@@ -1,128 +1,14 @@
 plugins {
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
+    // https://fabricmc.net/develop/
+    id 'fabric-loom' version '1.8-SNAPSHOT' apply false
+
+    // https://projects.neoforged.net/neoforged/moddevgradle
+    id 'net.neoforged.moddev' version '2.0.49-beta' apply false
+
+    // https://modmuss50.github.io/mod-publish-plugin/#changelog
     id "me.modmuss50.mod-publish-plugin" version "0.7.4"
 }
 
-architectury {
-    minecraft = rootProject.minecraft_version
-}
-
-subprojects {
-    apply plugin: "dev.architectury.loom"
-    apply plugin: "me.modmuss50.mod-publish-plugin"
-
-    version = "${rootProject.mod_version}+${rootProject.minecraft_version}"
-
-    loom {
-        silentMojangMappingsLicense()
-    }
-
-    dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings loom.officialMojangMappings()
-    }
-
-    Map<String, Map<String, String>> platformSettings = [
-            "fabric": [
-                    "curse-id": "357304",
-                    "modrinth-id": "S1tbzJ6Y"
-            ],
-            "neoforge": [
-                    "curse-id": "357304",
-                    "modrinth-id": "S1tbzJ6Y"
-            ]
-    ]
-
-    Map<String, Map<String, Boolean>> platformDependencies = [
-            "fabric": [
-                    "fabric-api": true
-            ],
-            "neoforge": []
-    ]
-
-    var env = System.getenv()
-    def uploadSettings = platformSettings.get(name)
-    def uploadDependencies = platformDependencies.get(name)
-
-    if (uploadSettings != null && uploadDependencies != null) {
-
-        File changeLog = rootProject.file("CHANGELOG.md")
-        String changelogText = changeLog.exists() ? changeLog.text : ""
-
-        publishMods {
-            file = tasks.remapJar.archiveFile
-            type = STABLE
-            changelog = changelogText
-
-            displayName = "Structure Void Toggle v${project.mod_version} ${name.capitalize()}"
-            version = "${project.version}-${name}"
-            modLoaders.add(name)
-
-            if (env.CURSEFORGEKEY) {
-                curseforge {
-                    accessToken = env.CURSEFORGEKEY
-                    projectId = uploadSettings["curse-id"]
-                    minecraftVersions.add(rootProject.minecraft_version)
-
-                    if (uploadDependencies.size() > 0) {
-                        uploadDependencies.each { dep, required ->
-                            if (required) {
-                                requires(dep)
-                            }
-                            else {
-                                optional(dep)
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (env.MODRINTH_TOKEN) {
-                modrinth {
-                    accessToken = env.MODRINTH_TOKEN
-                    projectId = uploadSettings["modrinth-id"]
-                    minecraftVersions.add(rootProject.minecraft_version)
-
-                    dependencies {
-                        uploadDependencies.each { dep, required ->
-                            if (required) {
-                                requires(dep)
-                            } else {
-                                optional(dep)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-allprojects {
-    apply plugin: "java"
-    apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
-
-    archivesBaseName = rootProject.modid
-    version = "${rootProject.mod_version}+${rootProject.minecraft_version}"
-    group = rootProject.maven_group
-
-    repositories {
-        maven { url "https://maven.architectury.dev/" }
-        maven { url "https://maven.neoforged.net/releases/" }
-    }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-        options.release = 21
-    }
-
-    java {
-        withSourcesJar()
-    }
-}
-
-task buildAndReleaseAll{
+tasks.register('buildAndReleaseAll') {
     dependsOn(':neoforge:buildAndRelease', ':fabric:buildAndRelease')
 }

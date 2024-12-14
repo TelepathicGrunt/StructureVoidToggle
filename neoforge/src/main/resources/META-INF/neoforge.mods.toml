@@ -1,19 +1,24 @@
 modLoader="javafml"
-loaderVersion="[1,)"
+loaderVersion="[4,)"
 license="MIT License"
 
 [[mods]]
-    modId="structure_void_toggle"
+    modId="${mod_id}"
     version="${version}"
-    displayName="Structure Void Toggle"
-    displayURL="https://www.curseforge.com/minecraft/mc-mods/structure-void-toggle"
-    authors="TelepathicGrunt"
-    description='''Make structure void less annoying to build with'''
+    displayName="${mod_name}"
+    displayURL="${display_url}"
+    authors="${mod_author}"
+    description='''${description}'''
 
 [[mixins]]
-    config = "structure_void_toggle.mixins.json"
+    config = "${mod_id}.mixins.json"
 
-[[dependencies.structure_void_toggle]]
+[[dependencies.${mod_id}]]
+    modId = "neoforge"
+    type="required"
+    versionRange = "[${neoforge_version},)"
+
+[[dependencies.${mod_id}]]
     modId="minecraft"
     type="required"
-    versionRange="[1.21.3,)"
+    versionRange="${minecraft_version_range}"
