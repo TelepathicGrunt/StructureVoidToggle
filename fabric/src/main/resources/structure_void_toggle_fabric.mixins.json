@@ -1,6 +1,7 @@
 {
   "required": true,
   "package": "com.telepathicgrunt.structurevoidtoggle.fabric.mixins",
+  "refmap": "structure_void_toggle.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [],
   "client": [
