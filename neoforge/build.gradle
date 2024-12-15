@@ -36,7 +36,7 @@ neoForge {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-task buildAndRelease {}
+tasks.register('buildAndRelease') {}
 tasks.publish.mustRunAfter tasks.build
 tasks.publishMods.mustRunAfter tasks.publish
 tasks.buildAndRelease.dependsOn(tasks.build, tasks.publish, tasks.publishMods)

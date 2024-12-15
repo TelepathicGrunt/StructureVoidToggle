@@ -40,59 +40,7 @@ loom {
 
 publishMods { file = tasks.remapJar.archiveFile }
 
-var env = System.getenv()
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact tasks.remapJar.archiveFile
-            artifact(sourcesJar) {
-                builtBy tasks.remapSourcesJar.archiveFile
-            }
-
-            artifactId = "${publish_name}-${name}"
-
-            pom {
-                name = "${publish_name}-${name}"
-                description = "${description}"
-                url = "${publish_repo}"
-
-                scm {
-                    connection = "git:${publish_repo}.git"
-                    developerConnection = "git:${publish_repo}.git"
-                    url = "${publish_repo}"
-                }
-
-                licenses {
-                    license {
-                        name = "MIT License"
-                        url = "${publish_repo}/blob/master/LICENSE.txt"
-                    }
-                }
-
-                developers {
-                    developer {
-                        id = "${publish_id}"
-                        name = "${publish_author}"
-                        email = "${publish_email}"
-                    }
-                }
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            url = uri("https://nexus.resourcefulbees.com/repository/telepathicgrunt/")
-            credentials {
-                username env.MAVEN_USER
-                password env.MAVEN_PASS
-            }
-        }
-    }
-}
-
-task buildAndRelease{}
+tasks.register('buildAndRelease') {}
 tasks.publish.mustRunAfter tasks.build
 tasks.publishMods.mustRunAfter tasks.publish
 tasks.buildAndRelease.dependsOn(tasks.build, tasks.publish, tasks.publishMods)

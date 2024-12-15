@@ -104,20 +104,6 @@ processResources {
     inputs.properties(expandProps)
 }
 
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifactId base.archivesName.get()
-            from components.java
-        }
-    }
-    repositories {
-        maven {
-            url System.getenv('local_maven_url')
-        }
-    }
-}
-
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
     options.release = 21
@@ -142,8 +128,8 @@ Map<String, Map<String, Boolean>> platformDependencies = [
 ] as Map<String, Map<String, Boolean>>
 
 var env = System.getenv()
-def uploadSettings = platformSettings.get(name)
-def uploadDependencies = platformDependencies.get(name)
+def uploadSettings = platformSettings.get(name.capitalize())
+def uploadDependencies = platformDependencies.get(name.capitalize())
 
 if (uploadSettings != null && uploadDependencies != null) {
 
@@ -156,8 +142,8 @@ if (uploadSettings != null && uploadDependencies != null) {
         changelog = changelogText
 
         displayName = "${mod_name} v${mod_version} ${name.capitalize()}"
-        version = "${project.version}-${name}"
-        modLoaders.add(name as String)
+        version = "${project.version}-${name.capitalize()}"
+        modLoaders.add(name.capitalize() as String)
 
         if (env.CURSEFORGEKEY) {
             curseforge {
@@ -198,14 +184,10 @@ if (uploadSettings != null && uploadDependencies != null) {
     }
 }
 
+
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifact tasks.jar.archiveFile
-            artifact(sourcesJar) {
-                builtBy tasks.sourcesJar.archiveFile
-            }
-
+        register('mavenJava', MavenPublication) {
             artifactId = "${publish_name}-${name}"
 
             pom {
