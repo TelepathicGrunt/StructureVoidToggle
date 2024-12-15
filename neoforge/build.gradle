@@ -1,7 +1,6 @@
 plugins {
     id 'multiloader-loader'
     id 'net.neoforged.moddev'
-    id "me.modmuss50.mod-publish-plugin"
 }
 
 neoForge {
@@ -35,8 +34,3 @@ neoForge {
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-tasks.register('buildAndRelease') {}
-tasks.publish.mustRunAfter tasks.build
-tasks.publishMods.mustRunAfter tasks.publish
-tasks.buildAndRelease.dependsOn(tasks.build, tasks.publish, tasks.publishMods)

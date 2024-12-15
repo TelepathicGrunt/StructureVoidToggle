@@ -73,6 +73,18 @@ publishMods {
     }
 }
 
+tasks.publishCurseforgeNeoForge.mustRunAfter(':neoforge:publishNeoforgePublicationToMavenRepository')
+tasks.publishModrinthNeoForge.mustRunAfter(':neoforge:publishNeoforgePublicationToMavenRepository')
+tasks.publishCurseforgeFabric.mustRunAfter(':fabric:publishFabricPublicationToMavenRepository')
+tasks.publishModrinthFabric.mustRunAfter(':fabric:publishFabricPublicationToMavenRepository')
+
+tasks.register('buildAndReleaseNeoForge') {
+    dependsOn(':neoforge:build', ':neoforge:publishNeoforgePublicationToMavenRepository', tasks.publishCurseforgeNeoForge, tasks.publishModrinthNeoForge)
+}
+tasks.register('buildAndReleaseFabric') {
+    dependsOn(':fabric:build', ':fabric:publishFabricPublicationToMavenRepository', tasks.publishCurseforgeFabric, tasks.publishModrinthFabric)
+}
+
 tasks.register('buildAndReleaseAll') {
-    dependsOn(':neoforge:buildAndRelease', ':fabric:buildAndRelease')
+    dependsOn(tasks.buildAndReleaseNeoForge, tasks.buildAndReleaseFabric)
 }
