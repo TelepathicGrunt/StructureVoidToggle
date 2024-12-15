@@ -3,7 +3,9 @@ plugins {
     id 'maven-publish'
 }
 
+group = "${maven_group}"
 version = "${mod_version}+${minecraft_version}"
+base.archivesName = "${mod_id}"
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(21)
@@ -109,8 +111,6 @@ var env = System.getenv()
 publishing {
     publications {
         register(project.name.capitalize(), MavenPublication) {
-            groupId = "${maven_group}"
-            artifactId = "${publish_name}-${project.name.capitalize()}"
             from components.java
 
             pom {

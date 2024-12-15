@@ -12,9 +12,9 @@ configurations {
 }
 
 dependencies {
-    compileOnly(project(":$mod_id-common"))
-    commonJava project(path: ":$mod_id-common", configuration: 'commonJava')
-    commonResources project(path: ":$mod_id-common", configuration: 'commonResources')
+    compileOnly(project(":$publish_name-Common"))
+    commonJava project(path: ":$publish_name-Common", configuration: 'commonJava')
+    commonResources project(path: ":$publish_name-Common", configuration: 'commonResources')
 }
 
 tasks.named('compileJava', JavaCompile) {

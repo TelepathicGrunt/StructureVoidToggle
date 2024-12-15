@@ -28,5 +28,5 @@ include('fabric')
 include('neoforge')
 
 rootProject.children.each {
-    it.name = "${mod_id}-${it.name}"
+    it.name = "${publish_name}-${it.name.capitalize()}"
 }
