@@ -28,5 +28,5 @@ include('fabric')
 include('neoforge')
 
 rootProject.children.each {
-    it.name = "${mod_id}-${it.name}-${minecraft_version}"
+    it.name = "${mod_id}-${it.name}"
 }
