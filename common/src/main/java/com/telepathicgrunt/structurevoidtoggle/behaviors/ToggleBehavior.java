@@ -59,9 +59,6 @@ public class ToggleBehavior {
 	// The current mode for the structure void block forced rendering for the current client
 	public static boolean FORCED_RENDERING = false;
 
-	// The current mode for if player placing is put on top of this block or replaces this block
-	public static boolean FORCED_NON_REPLACEABLE = false;
-	
 	// Keybind for switching hitbox modes. 96 is the keycode for backtick `
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_TOGGLE = new KeyMapping(
 			"key.structure_void", GLFW.GLFW_KEY_GRAVE_ACCENT, "key.categories.structure_void_toggle");
@@ -80,9 +77,6 @@ public class ToggleBehavior {
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_NON_REPLACING_TOGGLE = new KeyMapping(
 			"key.non_replacing", GLFW.GLFW_KEY_PAGE_UP, "key.categories.structure_void_toggle"
 	);
-
-	// Holds Structure Void Block's shape
-	public static VoxelShape STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(5.0, 5.0, 5.0, 11.0, 11.0, 11.0);
 
 	/**
 	 * Toggles settings for the relevant keypress.
@@ -118,25 +112,25 @@ public class ToggleBehavior {
 		switch (MODE) {
 			case DEFAULT -> {
 				player.displayClientMessage(Component.translatable("system.structure_void_toggle.default_hitbox"), true);
-				STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(5, 5, 5, 11, 11, 11);
+				StructureVoidBlockShape.STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(5, 5, 5, 11, 11, 11);
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 16, 16, 16));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(-2, -2, -2, -1, -1, -1));
 			}
 			case NO_HITBOX -> {
 				player.displayClientMessage(Component.translatable("system.structure_void_toggle.no_hitbox"), true);
-				STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(0, 0, 0, 0, 0, 0);
+				StructureVoidBlockShape.STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(0, 0, 0, 0, 0, 0);
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 0, 0, 0));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(0, 0, 0, 0, 0, 0));
 			}
 			case SMALL_HITBOX -> {
 				player.displayClientMessage(Component.translatable("system.structure_void_toggle.small_hitbox"), true);
-				STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(5, 5, 5, 11, 11, 11);
+				StructureVoidBlockShape.STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(5, 5, 5, 11, 11, 11);
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(5, 5, 5, 11, 11, 11));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(5, 5, 5, 11, 11, 11));
 			}
 			case FULL_HITBOX -> {
 				player.displayClientMessage(Component.translatable("system.structure_void_toggle.full_hitbox"), true);
-				STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(0, 0, 0, 16, 16, 16);
+				StructureVoidBlockShape.STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(0, 0, 0, 16, 16, 16);
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 16, 16, 16));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(0, 0, 0, 16, 16, 16));
 			}
@@ -181,11 +175,11 @@ public class ToggleBehavior {
 	 * Switches between forced non-replaceable when PAGEUP is pressed.
 	 */
 	private static void toggleNonReplaceable() {
-		FORCED_NON_REPLACEABLE = !FORCED_NON_REPLACEABLE;
+		StructureVoidBlockShape.FORCED_NON_REPLACEABLE = !StructureVoidBlockShape.FORCED_NON_REPLACEABLE;
 		LocalPlayer player  = Minecraft.getInstance().player;
 		if (player == null) return;
 
-		if (FORCED_NON_REPLACEABLE) {
+		if (StructureVoidBlockShape.FORCED_NON_REPLACEABLE) {
 			player.displayClientMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_non_replaceable"), true);
 		}
 		else {

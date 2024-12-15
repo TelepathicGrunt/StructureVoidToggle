@@ -1,6 +1,7 @@
 package com.telepathicgrunt.structurevoidtoggle.mixin;
 
 import com.telepathicgrunt.structurevoidtoggle.behaviors.ShapeInterface;
+import com.telepathicgrunt.structurevoidtoggle.behaviors.StructureVoidBlockShape;
 import com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -60,7 +61,7 @@ public class LightBlockMixin extends Block implements ShapeInterface {
 
     @Override
     public boolean canBeReplaced(BlockState blockState, BlockPlaceContext context) {
-        if (ToggleBehavior.FORCED_NON_REPLACEABLE) {
+        if (StructureVoidBlockShape.FORCED_NON_REPLACEABLE) {
             return false;
         }
         return super.canBeReplaced(blockState, context);
