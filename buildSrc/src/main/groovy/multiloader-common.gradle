@@ -49,7 +49,7 @@ repositories {
 ['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
     configurations."$variant".outgoing {
         capability("$group:${project.name}:$version")
-        capability("$group:$mod_id:$version")
+        capability("$group:${publish_name}:$version")
     }
     publishing.publications.configureEach {
         suppressPomMetadataWarningsFor(variant)
