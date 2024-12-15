@@ -3,9 +3,12 @@ plugins {
     id 'maven-publish'
 }
 
-group = "${maven_group}"
-version = "${mod_version}+${minecraft_version}"
+// Jar file main name
 base.archivesName = "${mod_id}"
+// Version to attach to end of Jar file name
+version = "${mod_version}+${minecraft_version}"
+// Needed for publishing the artifact to the right place on maven
+group = "${maven_group}"
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(21)
