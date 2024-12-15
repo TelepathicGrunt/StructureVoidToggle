@@ -128,8 +128,8 @@ Map<String, Map<String, Boolean>> platformDependencies = [
 ] as Map<String, Map<String, Boolean>>
 
 var env = System.getenv()
-def uploadSettings = platformSettings.get(name.capitalize())
-def uploadDependencies = platformDependencies.get(name.capitalize())
+def uploadSettings = platformSettings.get(project.name.capitalize())
+def uploadDependencies = platformDependencies.get(project.name.capitalize())
 
 if (uploadSettings != null && uploadDependencies != null) {
 
@@ -141,9 +141,9 @@ if (uploadSettings != null && uploadDependencies != null) {
         type = STABLE
         changelog = changelogText
 
-        displayName = "${mod_name} v${mod_version} ${name.capitalize()}"
-        version = "${project.version}-${name.capitalize()}"
-        modLoaders.add(name.capitalize() as String)
+        displayName = "${mod_name} v${mod_version} ${project.name.capitalize()}"
+        version = "${project.version}-${project.name.capitalize()}"
+        modLoaders.add(project.name.capitalize() as String)
 
         if (env.CURSEFORGEKEY) {
             curseforge {
@@ -187,11 +187,13 @@ if (uploadSettings != null && uploadDependencies != null) {
 
 publishing {
     publications {
-        register('mavenJava', MavenPublication) {
-            artifactId = "${publish_name}-${name}"
+        register(project.name.capitalize(), MavenPublication) {
+            groupId = "${maven_group}"
+            artifactId = "${publish_name}-${project.name.capitalize()}"
+            from components.java
 
             pom {
-                name = "${publish_name}-${name}"
+                name = "${publish_name}-${project.name.capitalize()}"
                 description = "${description}"
                 url = "${publish_repo}"
 
