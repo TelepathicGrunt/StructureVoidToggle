@@ -33,7 +33,7 @@ publishMods {
     // FABRIC
 
     curseforge("curseforgeFabric") {
-        displayName = "${project.mod_name} v${project.mod_version} Fabric"
+        displayName = "${mod_name} v${mod_version} Fabric"
         version = "${project.version}-Fabric"
         from cfOptions
         file project(":fabric")
@@ -44,7 +44,7 @@ publishMods {
     }
 
     modrinth("modrinthFabric") {
-        displayName = "${project.mod_name} v${project.mod_version} Fabric"
+        displayName = "${mod_name} v${mod_version} Fabric"
         version = "${project.version}-Fabric"
         from mrOptions
         file project(":fabric")
@@ -57,7 +57,7 @@ publishMods {
     // NEOFORGE
 
     curseforge("curseforgeNeoForge") {
-        displayName = "${project.mod_name} v${project.mod_version} Neoforge"
+        displayName = "${mod_name} v${mod_version} Neoforge"
         version = "${project.version}-Neoforge"
         from cfOptions
         file project(":neoforge")
@@ -65,7 +65,7 @@ publishMods {
     }
 
     modrinth("modrinthNeoForge") {
-        displayName = "${project.mod_name} v${project.mod_version} Neoforge"
+        displayName = "${mod_name} v${mod_version} Neoforge"
         version = "${project.version}-Neoforge"
         from mrOptions
         file project(":neoforge")
