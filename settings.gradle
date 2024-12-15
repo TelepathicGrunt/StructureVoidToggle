@@ -26,3 +26,7 @@ rootProject.name = "StructureVoidToggle"
 include('common')
 include('fabric')
 include('neoforge')
+
+rootProject.children.each {
+    it.name = "${mod_id}-${it.name}-${minecraft_version}"
+}
