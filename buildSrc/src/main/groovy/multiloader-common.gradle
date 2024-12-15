@@ -5,7 +5,7 @@ plugins {
 
 base {
     archivesName = "${mod_id}"
-    version = "${rootProject.mod_version}+${rootProject.minecraft_version}"
+    version = "${mod_version}+${minecraft_version}"
 }
 
 java {
@@ -124,12 +124,12 @@ Map<String, Map<String, Boolean>> platformDependencies = [
         "fabric": [
                 "fabric-api": true
         ],
-        "neoforge": []
+        "neoforge": [:]
 ] as Map<String, Map<String, Boolean>>
 
 var env = System.getenv()
-def uploadSettings = platformSettings.get(project.name.capitalize())
-def uploadDependencies = platformDependencies.get(project.name.capitalize())
+def uploadSettings = platformSettings.get(project.name)
+def uploadDependencies = platformDependencies.get(project.name)
 
 if (uploadSettings != null && uploadDependencies != null) {
 
