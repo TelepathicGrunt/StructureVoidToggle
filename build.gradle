@@ -6,7 +6,71 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.49-beta' apply false
 
     // https://modmuss50.github.io/mod-publish-plugin/#changelog
-    id "me.modmuss50.mod-publish-plugin" version "0.7.4"
+    id "me.modmuss50.mod-publish-plugin" version "0.8.3"
+}
+
+publishMods {
+    File changeLog = rootProject.file("CHANGELOG.md")
+    String changelogText = changeLog.exists() ? changeLog.text : ""
+
+    changelog = changelogText
+    type = STABLE
+
+    // CurseForge options used by both Fabric and Forge
+    def cfOptions = curseforgeOptions {
+        accessToken = providers.environmentVariable("CURSEFORGEKEY")
+        projectId = "357304"
+        minecraftVersions.add(minecraft_version)
+    }
+
+    // Modrinth options used by both Fabric and Forge
+    def mrOptions = modrinthOptions {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = "S1tbzJ6Y"
+        minecraftVersions.add(minecraft_version)
+    }
+
+    // FABRIC
+
+    curseforge("curseforgeFabric") {
+        displayName = "${project.mod_name} v${project.mod_version} Fabric"
+        version = "${project.version}-Fabric"
+        from cfOptions
+        file project(":fabric")
+        modLoaders.add("fabric")
+        requires {
+            slug = "fabric-api"
+        }
+    }
+
+    modrinth("modrinthFabric") {
+        displayName = "${project.mod_name} v${project.mod_version} Fabric"
+        version = "${project.version}-Fabric"
+        from mrOptions
+        file project(":fabric")
+        modLoaders.add("fabric")
+        requires {
+            slug = "fabric-api"
+        }
+    }
+
+    // NEOFORGE
+
+    curseforge("curseforgeNeoForge") {
+        displayName = "${project.mod_name} v${project.mod_version} Neoforge"
+        version = "${project.version}-Neoforge"
+        from cfOptions
+        file project(":neoforge")
+        modLoaders.add("neoforge")
+    }
+
+    modrinth("modrinthNeoForge") {
+        displayName = "${project.mod_name} v${project.mod_version} Neoforge"
+        version = "${project.version}-Neoforge"
+        from mrOptions
+        file project(":neoforge")
+        modLoaders.add("neoforge")
+    }
 }
 
 tasks.register('buildAndReleaseAll') {

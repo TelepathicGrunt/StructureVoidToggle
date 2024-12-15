@@ -38,8 +38,6 @@ loom {
     }
 }
 
-publishMods { file = tasks.remapJar.archiveFile }
-
 tasks.register('buildAndRelease') {}
 tasks.publish.mustRunAfter tasks.build
 tasks.publishMods.mustRunAfter tasks.publish
