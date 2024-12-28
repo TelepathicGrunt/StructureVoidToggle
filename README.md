@@ -29,7 +29,7 @@ Don't forget to change &lt;modversion> with the actual latest version of this mo
 &nbsp; ...
 
 
-&nbsp; implementation fg.deobf("com.telepathicgrunt:StructureVoidToggle-Neoforge:&lt;modversion>+1.21.0")
+&nbsp; implementation fg.deobf("com.telepathicgrunt:StructureVoidToggle-Neoforge:&lt;modversion>+1.21.1")
 
 
 }</blockquote>
