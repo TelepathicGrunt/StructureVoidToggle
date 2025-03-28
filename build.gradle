@@ -25,10 +25,10 @@ subprojects {
     project.version = rootProject.version
 
     base {
-        archivesName.set(mod_id)
+        archivesName.set("${mod_id}-${project.name.capitalize()}")
     }
 
-    version = "${rootProject.mod_version}+${rootProject.minecraft_version}-${name}"
+    version = "${rootProject.mod_version}+${rootProject.minecraft_version}"
 
     repositories {
         maven { url = 'https://maven.teamresourceful.com/repository/maven-releases' }
@@ -125,7 +125,7 @@ subprojects {
         publications {
             "mavenJava${project.name}"(MavenPublication) {
                 from components.java
-                artifactId "${project.mod_id}".toUpperCase()
+                artifactId "StructureVoidToggle-${project.name.capitalize()}"
 
                 pom {
                     name = project.mod_name
