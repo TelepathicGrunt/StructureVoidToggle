@@ -225,14 +225,11 @@ public class ToggleBehavior {
 
 			Tesselator tesselator = Tesselator.getInstance();
 			BufferBuilder bufferbuilder;
-			RenderSystem.AutoStorageIndexBuffer storageIndexBuffer;
 			if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
 				bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-				storageIndexBuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
             }
 			else {
-				bufferbuilder = tesselator.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-				storageIndexBuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.DEBUG_LINES);
+				bufferbuilder = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
             }
 
             boolean addedVertex = false;
@@ -338,19 +335,48 @@ public class ToggleBehavior {
 					}
 				}
 			}
+
 			if (addedVertex) {
-				GpuBuffer vertexBuffer = RenderSystem.getQuadVertexBuffer();
-				
-				//GpuBuffer buffer = RenderSystem.getDevice().createBuffer(() -> "Structure Void Toggle Outlines", BufferType.VERTICES, BufferUsage.DYNAMIC_WRITE, meshData.vertexBuffer())
-				try (MeshData meshData = bufferbuilder.buildOrThrow();
-					 RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(Minecraft.getInstance().getMainRenderTarget().getColorTexture(), OptionalInt.empty(), Minecraft.getInstance().getMainRenderTarget().getDepthTexture(), OptionalDouble.empty());)
-				{
-					renderPass.setPipeline(RenderPipelines.DEBUG_LINE_STRIP);
-					renderPass.setVertexBuffer(0, vertexBuffer);
-					renderPass.setIndexBuffer(storageIndexBuffer.getBuffer(meshData.drawState().indexCount()), storageIndexBuffer.type());
-					renderPass.drawIndexed(0, meshData.drawState().indexCount());
+
+				try (MeshData meshData = bufferbuilder.buildOrThrow()) {
+
+					RenderSystem.AutoStorageIndexBuffer storageIndexBuffer = RenderSystem.getSequentialBuffer(meshData.drawState().mode());
+					GpuBuffer gpuBuffer;
+					GpuBuffer gpuBuffer2;
+					if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
+						gpuBuffer = RenderPipelines.DEBUG_QUADS.getVertexFormat().uploadImmediateVertexBuffer(meshData.vertexBuffer());
+						if (meshData.indexBuffer() == null) {
+							gpuBuffer2 = storageIndexBuffer.getBuffer(meshData.drawState().indexCount());
+						}
+						else {
+							gpuBuffer2 = RenderPipelines.DEBUG_QUADS.getVertexFormat().uploadImmediateIndexBuffer(meshData.indexBuffer());
+						}
+					}
+					else {
+						gpuBuffer = RenderPipelines.LINES.getVertexFormat().uploadImmediateVertexBuffer(meshData.vertexBuffer());
+						if (meshData.indexBuffer() == null) {
+							gpuBuffer2 = storageIndexBuffer.getBuffer(meshData.drawState().indexCount());
+						}
+						else {
+							gpuBuffer2 = RenderPipelines.LINES.getVertexFormat().uploadImmediateIndexBuffer(meshData.indexBuffer());
+						}
+					}
+
+					try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(Minecraft.getInstance().getMainRenderTarget().getColorTexture(), OptionalInt.empty(), Minecraft.getInstance().getMainRenderTarget().getDepthTexture(), OptionalDouble.empty()))
+					{
+						if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
+							renderPass.setPipeline(RenderPipelines.DEBUG_QUADS);
+						}
+						else {
+							renderPass.setPipeline(RenderPipelines.LINES);
+						}
+						renderPass.setVertexBuffer(0, gpuBuffer);
+						renderPass.setIndexBuffer(gpuBuffer2, storageIndexBuffer.type());
+						renderPass.drawIndexed(0, meshData.drawState().indexCount());
+					}
 				}
 			}
+
 			poseStack.popPose();
 
 			if (clearRenderState) {
