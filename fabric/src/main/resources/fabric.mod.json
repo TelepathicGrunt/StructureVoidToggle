@@ -2,21 +2,24 @@
   "schemaVersion": 1,
   "id": "${mod_id}",
   "version": "${version}",
-
-  "name": "${mod_name}",
-  "description": "${description}",
+  "name": "${mod_display_name}",
+  "description": "${mod_description}",
   "authors": [
-    "${mod_author}"
+    "TelepathicGrunt"
   ],
-  "contact": {},
+  "contact": {
+    "homepage": "${homepage_url}",
+    "sources": "${sources_url}",
+    "issues": "${issues_url}"
+  },
 
-  "license": "MIT",
+  "license": "MIT License",
 
   "environment": "*",
   "entrypoints": {
     "main": [],
     "client": [
-      "com.telepathicgrunt.structurevoidtoggle.fabric.StructureVoidToggleClient"
+      "com.telepathicgrunt.structurevoidtoggle.fabric.entrypoints.Main"
     ]
   },
   "mixins": [
@@ -26,8 +29,9 @@
 
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
-    "fabric-api": "*",
-    "minecraft": ">=${minecraft_version}"
+    "minecraft": "1.21.x",
+    "java": ">=${java_version}",
+    "fabric-api": "*"
   },
   "breaks": {
     "sodium": "*"

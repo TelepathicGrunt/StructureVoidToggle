@@ -1,89 +1,181 @@
 plugins {
-    // https://fabricmc.net/develop/
-    id 'fabric-loom' version '1.8-SNAPSHOT' apply false
-
-    // https://projects.neoforged.net/neoforged/moddevgradle
-    id 'net.neoforged.moddev' version '2.0.49-beta' apply false
-
-    // https://modmuss50.github.io/mod-publish-plugin/#changelog
-    id "me.modmuss50.mod-publish-plugin" version "0.8.4"
+    id 'idea'
+    id 'maven-publish'
+    id 'me.modmuss50.mod-publish-plugin' version '0.8.4' apply false
+    id 'net.neoforged.moddev' version '2.0.80' apply false
 }
 
-publishMods {
-    File changeLog = rootProject.file("CHANGELOG.md")
-    String changelogText = changeLog.exists() ? changeLog.text : ""
+def javaVersion = 21
 
-    changelog = changelogText
-    type = STABLE
+def ENV = System.getenv()
+version = mod_version
+group = mod_group_id
 
-    // CurseForge options used by both Fabric and Forge
-    def cfOptions = curseforgeOptions {
-        accessToken = providers.environmentVariable("CURSEFORGEKEY")
-        projectId = "357304"
-        minecraftVersions.add(minecraft_version)
+allprojects {
+    tasks.register('buildAndRelease') {
+        dependsOn(tasks.build, tasks.publish)
+    }
+}
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+    apply plugin: 'me.modmuss50.mod-publish-plugin'
+    project.group = rootProject.group
+    project.version = rootProject.version
+
+    base {
+        archivesName.set(mod_id)
     }
 
-    // Modrinth options used by both Fabric and Forge
-    def mrOptions = modrinthOptions {
-        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-        projectId = "S1tbzJ6Y"
-        minecraftVersions.add(minecraft_version)
+    version = "${rootProject.mod_version}+${rootProject.minecraft_version}-${name}"
+
+    repositories {
+        maven { url = 'https://maven.teamresourceful.com/repository/maven-releases' }
     }
 
-    // FABRIC
+    dependencies {
+        compileOnly "org.jetbrains:annotations:${jetbrains_annotations_version}"
+    }
 
-    curseforge("curseforgeFabric") {
-        displayName = "${mod_name} v${mod_version} Fabric"
-        version = "${mod_version}+${minecraft_version}-Fabric"
-        from cfOptions
-        file project(":$publish_name-Fabric")
-        modLoaders.add("fabric")
-        requires {
-            slug = "fabric-api"
+    processResources {
+        filteringCharset "UTF-8"
+
+        def expandProps = [
+                "version"              : project.version,
+                "maven_group_id"       : project.mod_group_id,
+                "mod_id"               : project.mod_id,
+                "mod_display_name"     : project.mod_name,
+                "mod_description"      : project.mod_description,
+                "sources_url"          : project.sources_url,
+                "issues_url"           : project.issues_url,
+                "license_url"          : project.license_url,
+                "homepage_url"         : project.homepage_url,
+
+                "minecraft_version"    : project.minecraft_version,
+                "neoforge_version"     : project.neoforge_version,
+                "fabric_loader_version": project.fabric_loader_version,
+                "java_version"         : "${javaVersion}",
+        ]
+
+        filesMatching(['pack.mcmeta', '*.mod.json', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
+            expand expandProps
+        }
+        inputs.properties(expandProps)
+    }
+
+    java {
+        if (JavaVersion.current() < JavaVersion.toVersion(javaVersion)) {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(javaVersion)
+            }
+        } else {
+            sourceCompatibility = JavaVersion.toVersion(javaVersion)
+            targetCompatibility = JavaVersion.toVersion(javaVersion)
+        }
+
+        withSourcesJar()
+//        withJavadocJar()
+    }
+
+    javadoc {
+        // make javadoc not throw on mixin's '@reason'
+        options.tags = ["reason"]
+    }
+
+    jar {
+        def licenseFile = rootProject.file("LICENSE.txt")
+        inputs.file(licenseFile)
+
+        from(licenseFile) {
+            rename { "LICENSE.txt" }
         }
     }
 
-    modrinth("modrinthFabric") {
-        displayName = "${mod_name} v${mod_version} Fabric"
-        version = "${mod_version}+${minecraft_version}-Fabric"
-        from mrOptions
-        file project(":$publish_name-Fabric")
-        modLoaders.add("fabric")
-        requires {
-            slug = "fabric-api"
+    sourcesJar {
+        def licenseFile = rootProject.file("LICENSE.txt")
+        inputs.file(licenseFile)
+
+        from(licenseFile) {
+            rename { "LICENSE.txt" }
         }
     }
 
-    // NEOFORGE
-
-    curseforge("curseforgeNeoForge") {
-        displayName = "${mod_name} v${mod_version} Neoforge"
-        version = "${mod_version}+${minecraft_version}-Neoforge"
-        from cfOptions
-        file project(":$publish_name-Neoforge")
-        modLoaders.add("neoforge")
+    tasks.withType(JavaCompile).configureEach {
+        options.release.set(javaVersion)
     }
 
-    modrinth("modrinthNeoForge") {
-        displayName = "${mod_name} v${mod_version} Neoforge"
-        version = "${mod_version}+${minecraft_version}-Neoforge"
-        from mrOptions
-        file project(":$publish_name-Neoforge")
-        modLoaders.add("neoforge")
+    tasks.publishMods.mustRunAfter tasks.publish
+    tasks.buildAndRelease.dependsOn(tasks.publish).dependsOn(tasks.publishMods)
+
+    publishing {
+        repositories {
+            if (ENV.MAVEN_USER) {
+                maven {
+                    url = uri("https://nexus.resourcefulbees.com/repository/telepathicgrunt/")
+                    credentials {
+                        username ENV.MAVEN_USER
+                        password ENV.MAVEN_PASS
+                    }
+                }
+            }
+        }
+
+        publications {
+            "mavenJava${project.name}"(MavenPublication) {
+                from components.java
+                artifactId "${project.mod_id}".toUpperCase()
+
+                pom {
+                    name = project.mod_name
+                    description = project.mod_description
+                    url = project.sources_url
+
+                    scm {
+                        connection = "git:${project.sources_url}.git"
+                        developerConnection = "git:${project.sources_url}.git"
+                        url = project.sources_url
+                    }
+
+                    licenses {
+                        license {
+                            name = 'MIT License'
+                            url = project.license_url
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'telepathic_grunt'
+                            name = 'TelepathicGrunt'
+                            email = 'asarnesespam@gmail.com'
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    publishMods {
+        type = STABLE
+
+        displayName = "${project.mod_name} v${project.mod_version} (${project.minecraft_version} ${project.name.capitalize()})"
+        version = project.version
+
+        def changeLogFile = project.file("CHANGELOG.md")
+        changelog = changeLogFile.exists() ? changeLogFile.text : ""
     }
 }
 
-tasks.publishCurseforgeNeoForge.mustRunAfter(':neoforge:publishNeoforgePublicationToMavenRepository')
-tasks.publishModrinthNeoForge.mustRunAfter(':neoforge:publishNeoforgePublicationToMavenRepository')
-tasks.publishCurseforgeFabric.mustRunAfter(':fabric:publishFabricPublicationToMavenRepository')
-tasks.publishModrinthFabric.mustRunAfter(':fabric:publishFabricPublicationToMavenRepository')
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
 
-tasks.register('buildAndReleaseNeoForge') {
-    dependsOn(':neoforge:build', ':neoforge:publishNeoforgePublicationToMavenRepository', tasks.publishCurseforgeNeoForge, tasks.publishModrinthNeoForge)
-}
-tasks.register('buildAndReleaseFabric') {
-    dependsOn(':fabric:build', ':fabric:publishFabricPublicationToMavenRepository', tasks.publishCurseforgeFabric, tasks.publishModrinthFabric)
-}
-tasks.register('buildAndReleaseAll') {
-    dependsOn(tasks.buildAndReleaseFabric, tasks.buildAndReleaseNeoForge)
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
 }

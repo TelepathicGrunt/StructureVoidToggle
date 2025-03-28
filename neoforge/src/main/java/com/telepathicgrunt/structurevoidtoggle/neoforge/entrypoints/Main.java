@@ -1,4 +1,4 @@
-package com.telepathicgrunt.structurevoidtoggle.neoforge;
+package com.telepathicgrunt.structurevoidtoggle.neoforge.entrypoints;
 
 import com.telepathicgrunt.structurevoidtoggle.StructureVoidToggle;
 import com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior;
@@ -10,11 +10,12 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 @Mod(value = StructureVoidToggle.MODID, dist = Dist.CLIENT)
-public class StructureVoidToggleClient {
+public class Main {
 
-    public StructureVoidToggleClient(IEventBus modEventBus) {
-        modEventBus.addListener(StructureVoidToggleClient::registerKeyBinding);
-        NeoForge.EVENT_BUS.addListener(StructureVoidToggleClient::forceRenderInvisibleBlocks);
+    public Main(IEventBus modEventBus) {
+        StructureVoidToggle.StructureVoidToggleInit();
+        modEventBus.addListener(Main::registerKeyBinding);
+        NeoForge.EVENT_BUS.addListener(Main::forceRenderInvisibleBlocks);
     }
 
     public static void registerKeyBinding(RegisterKeyMappingsEvent event) {
