@@ -25,7 +25,7 @@ public class LevelRendererMixin {
     @Inject(method = "renderSectionLayer(Lnet/minecraft/client/renderer/RenderType;DDDLorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/renderer/RenderType;clearRenderState()V",
-                    ordinal = 1)
+                    ordinal = 0)
     )
     private void structureVoidToggle$renderAfterSolidBlocks(CallbackInfo ci, @Local(argsOnly = true, ordinal = 0) RenderType renderType) {
         if (renderType == RenderType.solid()) {

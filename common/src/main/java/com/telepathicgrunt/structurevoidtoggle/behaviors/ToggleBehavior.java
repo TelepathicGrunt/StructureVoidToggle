@@ -19,6 +19,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -224,14 +225,17 @@ public class ToggleBehavior {
 
 			Tesselator tesselator = Tesselator.getInstance();
 			BufferBuilder bufferbuilder;
+			RenderSystem.AutoStorageIndexBuffer storageIndexBuffer;
 			if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
 				bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-			}
+				storageIndexBuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
+            }
 			else {
 				bufferbuilder = tesselator.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-			}
+				storageIndexBuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.DEBUG_LINES);
+            }
 
-			boolean addedVertex = false;
+            boolean addedVertex = false;
 			int radiusSq = radius * radius;
 			for (int x = -radius; x <= radius; x++) {
 				for (int z = -radius; z <= radius; z++) {
@@ -335,15 +339,17 @@ public class ToggleBehavior {
 				}
 			}
 			if (addedVertex) {
-				renderBufferWithPipeline(
-						"Dynamic vertex buffer",
-						RenderPipeline.builder()
-								.withVertexShader("core/position_color")
-								.withFragmentShader("core/position_color")
-								.build(),
-						Minecraft.getInstance().getMainRenderTarget(),
-						bufferbuilder,
-						(renderPass) -> renderPass.setUniform("TestUniform", 420));
+				GpuBuffer vertexBuffer = RenderSystem.getQuadVertexBuffer();
+				
+				//GpuBuffer buffer = RenderSystem.getDevice().createBuffer(() -> "Structure Void Toggle Outlines", BufferType.VERTICES, BufferUsage.DYNAMIC_WRITE, meshData.vertexBuffer())
+				try (MeshData meshData = bufferbuilder.buildOrThrow();
+					 RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(Minecraft.getInstance().getMainRenderTarget().getColorTexture(), OptionalInt.empty(), Minecraft.getInstance().getMainRenderTarget().getDepthTexture(), OptionalDouble.empty());)
+				{
+					renderPass.setPipeline(RenderPipelines.DEBUG_LINE_STRIP);
+					renderPass.setVertexBuffer(0, vertexBuffer);
+					renderPass.setIndexBuffer(storageIndexBuffer.getBuffer(meshData.drawState().indexCount()), storageIndexBuffer.type());
+					renderPass.drawIndexed(0, meshData.drawState().indexCount());
+				}
 			}
 			poseStack.popPose();
 
@@ -410,26 +416,5 @@ public class ToggleBehavior {
 		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
 		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
 		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
-	}
-
-	public static void renderBufferWithPipeline(
-			String name,
-			RenderPipeline renderPipeline,
-			RenderTarget renderTarget,
-			BufferBuilder builder,
-			Consumer<RenderPass> uniformAndSamplerConsumer
-	) {
-		VertexFormat.Mode mode = renderPipeline.getVertexFormatMode();
-		try (MeshData meshData = builder.buildOrThrow();
-			RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(renderTarget.getColorTexture(), OptionalInt.empty(), renderTarget.getDepthTexture(), OptionalDouble.empty());
-			GpuBuffer buffer = RenderSystem.getDevice().createBuffer(() -> name, BufferType.VERTICES, BufferUsage.DYNAMIC_WRITE, meshData.vertexBuffer()))
-		{
-			RenderSystem.AutoStorageIndexBuffer autoStorageIndexBuffer = RenderSystem.getSequentialBuffer(mode);
-			renderPass.setPipeline(renderPipeline);
-			renderPass.setVertexBuffer(0, buffer);
-			renderPass.setIndexBuffer(autoStorageIndexBuffer.getBuffer(meshData.drawState().indexCount()), autoStorageIndexBuffer.type());
-			uniformAndSamplerConsumer.accept(renderPass);
-			renderPass.drawIndexed(0, meshData.drawState().indexCount());
-		}
 	}
 }
