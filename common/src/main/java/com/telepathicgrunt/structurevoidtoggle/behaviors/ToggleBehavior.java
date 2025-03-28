@@ -229,7 +229,7 @@ public class ToggleBehavior {
 				bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
             }
 			else {
-				bufferbuilder = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
+				bufferbuilder = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
             }
 
             boolean addedVertex = false;
@@ -313,8 +313,7 @@ public class ToggleBehavior {
 										(int) (green * distanceMult),
 										(int) (blue * distanceMult),
 										alpha);
-								addedVertex = true;
-							}
+                            }
 							else {
 								renderLineBox(
 										bufferbuilder,
@@ -329,9 +328,10 @@ public class ToggleBehavior {
 										green,
 										blue,
 										alpha);
-								addedVertex = true;
-							}
-						}
+                            }
+
+                            addedVertex = true;
+                        }
 					}
 				}
 			}
@@ -350,6 +350,7 @@ public class ToggleBehavior {
                     }
 					else {
 						pipeline = RenderPipelines.LINES;
+						RenderSystem.lineWidth(1.5F);
                     }
 
                     gpuBuffer = pipeline.getVertexFormat().uploadImmediateVertexBuffer(meshData.vertexBuffer());
@@ -366,6 +367,7 @@ public class ToggleBehavior {
 						renderPass.setVertexBuffer(0, gpuBuffer);
 						renderPass.setIndexBuffer(gpuBuffer2, storageIndexBuffer.type());
 						renderPass.drawIndexed(0, meshData.drawState().indexCount());
+						RenderSystem.lineWidth(1.0F);
 					}
 				}
 			}
@@ -411,6 +413,7 @@ public class ToggleBehavior {
 	}
 
 	private static void renderLineBox(BufferBuilder builder, Matrix4f pose, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int red, int green, int blue, int alpha) {
+
 		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
 		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
 		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
