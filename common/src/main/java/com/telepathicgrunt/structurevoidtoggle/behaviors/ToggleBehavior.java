@@ -1,9 +1,15 @@
 package com.telepathicgrunt.structurevoidtoggle.behaviors;
 
+import com.mojang.blaze3d.buffers.BufferType;
+import com.mojang.blaze3d.buffers.BufferUsage;
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -12,7 +18,6 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
@@ -26,12 +31,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Matrix4f;
 import org.joml.Vector4d;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.function.Consumer;
 
 public class ToggleBehavior {
 	public enum STRUCTURE_BLOCK_MODE {
@@ -216,7 +223,6 @@ public class ToggleBehavior {
 			poseStack.pushPose();
 
 			Tesselator tesselator = Tesselator.getInstance();
-			RenderSystem..setShader(CoreShaders.POSITION_COLOR);
 			BufferBuilder bufferbuilder;
 			if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
 				bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -329,7 +335,15 @@ public class ToggleBehavior {
 				}
 			}
 			if (addedVertex) {
-				BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+				renderBufferWithPipeline(
+						"Dynamic vertex buffer",
+						RenderPipeline.builder()
+								.withVertexShader("core/position_color")
+								.withFragmentShader("core/position_color")
+								.build(),
+						Minecraft.getInstance().getMainRenderTarget(),
+						bufferbuilder,
+						(renderPass) -> renderPass.setUniform("TestUniform", 420));
 			}
 			poseStack.popPose();
 
@@ -396,5 +410,26 @@ public class ToggleBehavior {
 		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
 		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
 		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
+	}
+
+	public static void renderBufferWithPipeline(
+			String name,
+			RenderPipeline renderPipeline,
+			RenderTarget renderTarget,
+			BufferBuilder builder,
+			Consumer<RenderPass> uniformAndSamplerConsumer
+	) {
+		VertexFormat.Mode mode = renderPipeline.getVertexFormatMode();
+		try (MeshData meshData = builder.buildOrThrow();
+			RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(renderTarget.getColorTexture(), OptionalInt.empty(), renderTarget.getDepthTexture(), OptionalDouble.empty());
+			GpuBuffer buffer = RenderSystem.getDevice().createBuffer(() -> name, BufferType.VERTICES, BufferUsage.DYNAMIC_WRITE, meshData.vertexBuffer()))
+		{
+			RenderSystem.AutoStorageIndexBuffer autoStorageIndexBuffer = RenderSystem.getSequentialBuffer(mode);
+			renderPass.setPipeline(renderPipeline);
+			renderPass.setVertexBuffer(0, buffer);
+			renderPass.setIndexBuffer(autoStorageIndexBuffer.getBuffer(meshData.drawState().indexCount()), autoStorageIndexBuffer.type());
+			uniformAndSamplerConsumer.accept(renderPass);
+			renderPass.drawIndexed(0, meshData.drawState().indexCount());
+		}
 	}
 }
