@@ -343,33 +343,26 @@ public class ToggleBehavior {
 					RenderSystem.AutoStorageIndexBuffer storageIndexBuffer = RenderSystem.getSequentialBuffer(meshData.drawState().mode());
 					GpuBuffer gpuBuffer;
 					GpuBuffer gpuBuffer2;
-					if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
-						gpuBuffer = RenderPipelines.DEBUG_QUADS.getVertexFormat().uploadImmediateVertexBuffer(meshData.vertexBuffer());
-						if (meshData.indexBuffer() == null) {
-							gpuBuffer2 = storageIndexBuffer.getBuffer(meshData.drawState().indexCount());
-						}
-						else {
-							gpuBuffer2 = RenderPipelines.DEBUG_QUADS.getVertexFormat().uploadImmediateIndexBuffer(meshData.indexBuffer());
-						}
-					}
-					else {
-						gpuBuffer = RenderPipelines.LINES.getVertexFormat().uploadImmediateVertexBuffer(meshData.vertexBuffer());
-						if (meshData.indexBuffer() == null) {
-							gpuBuffer2 = storageIndexBuffer.getBuffer(meshData.drawState().indexCount());
-						}
-						else {
-							gpuBuffer2 = RenderPipelines.LINES.getVertexFormat().uploadImmediateIndexBuffer(meshData.indexBuffer());
-						}
-					}
+					RenderPipeline pipeline;
 
-					try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(Minecraft.getInstance().getMainRenderTarget().getColorTexture(), OptionalInt.empty(), Minecraft.getInstance().getMainRenderTarget().getDepthTexture(), OptionalDouble.empty()))
+					if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
+						pipeline = RenderPipelines.DEBUG_QUADS;
+                    }
+					else {
+						pipeline = RenderPipelines.LINES;
+                    }
+
+                    gpuBuffer = pipeline.getVertexFormat().uploadImmediateVertexBuffer(meshData.vertexBuffer());
+                    if (meshData.indexBuffer() == null) {
+                        gpuBuffer2 = storageIndexBuffer.getBuffer(meshData.drawState().indexCount());
+                    }
+                    else {
+                        gpuBuffer2 = pipeline.getVertexFormat().uploadImmediateIndexBuffer(meshData.indexBuffer());
+                    }
+
+                    try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(Minecraft.getInstance().getMainRenderTarget().getColorTexture(), OptionalInt.empty(), Minecraft.getInstance().getMainRenderTarget().getDepthTexture(), OptionalDouble.empty()))
 					{
-						if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
-							renderPass.setPipeline(RenderPipelines.DEBUG_QUADS);
-						}
-						else {
-							renderPass.setPipeline(RenderPipelines.LINES);
-						}
+						renderPass.setPipeline(pipeline);
 						renderPass.setVertexBuffer(0, gpuBuffer);
 						renderPass.setIndexBuffer(gpuBuffer2, storageIndexBuffer.type());
 						renderPass.drawIndexed(0, meshData.drawState().indexCount());
