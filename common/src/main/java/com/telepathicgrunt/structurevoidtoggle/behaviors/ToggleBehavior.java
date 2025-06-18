@@ -17,6 +17,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.DynamicUniforms;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
@@ -345,13 +346,20 @@ public class ToggleBehavior {
 					GpuBuffer gpuBuffer;
 					GpuBuffer gpuBuffer2;
 					RenderPipeline pipeline;
+					GpuBufferSlice[] gpubufferslice;
 
 					if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
 						pipeline = RenderPipelines.DEBUG_QUADS;
+						gpubufferslice = new GpuBufferSlice[1];
+						gpubufferslice[0] = RenderSystem.getDynamicUniforms().writeTransform(RenderSystem.getModelViewMatrix(), new Vector4f(1.0F, 1.0F, 1.0F, 1.0F), new Vector3f(), new Matrix4f(), 0.0F);
                     }
 					else {
 						pipeline = RenderPipelines.LINES;
 						RenderSystem.lineWidth(1.5F);
+						gpubufferslice = RenderSystem.getDynamicUniforms()
+								.writeTransforms(
+										new DynamicUniforms.Transform(RenderSystem.getModelViewMatrix(), new Vector4f(1.0F, 1.0F, 1.0F, 1.0F), new Vector3f(), new Matrix4f(), 2.0F)
+								);
                     }
 
                     gpuBuffer = pipeline.getVertexFormat().uploadImmediateVertexBuffer(meshData.vertexBuffer());
@@ -361,9 +369,6 @@ public class ToggleBehavior {
                     else {
                         gpuBuffer2 = pipeline.getVertexFormat().uploadImmediateIndexBuffer(meshData.indexBuffer());
                     }
-
-					GpuBufferSlice gpubufferslice = RenderSystem.getDynamicUniforms()
-							.writeTransform(RenderSystem.getModelViewMatrix(), new Vector4f(1.0F, 1.0F, 1.0F, 1.0F), new Vector3f(), new Matrix4f(), 0.0F);
 
 					try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
 							() -> "Structure Void Toggle Render Cubes",
@@ -382,9 +387,9 @@ public class ToggleBehavior {
 						if (gpubuffer3 != null) {
 							renderPass.setUniform("Globals", gpubuffer3);
 						}
-						renderPass.setUniform("DynamicTransforms", gpubufferslice);
 						renderPass.setVertexBuffer(0, gpuBuffer);
 						renderPass.setIndexBuffer(gpuBuffer2, storageIndexBuffer.type());
+						renderPass.setUniform("DynamicTransforms", gpubufferslice[0]);
 						renderPass.drawIndexed(0, 0, meshData.drawState().indexCount(), 1);
 						RenderSystem.lineWidth(1.0F);
 					}
