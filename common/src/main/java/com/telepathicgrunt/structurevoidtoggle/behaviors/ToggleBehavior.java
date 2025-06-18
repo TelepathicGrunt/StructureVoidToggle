@@ -1,8 +1,7 @@
 package com.telepathicgrunt.structurevoidtoggle.behaviors;
 
-import com.mojang.blaze3d.buffers.BufferType;
-import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderPass;
@@ -33,7 +32,9 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.joml.Vector4d;
+import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
@@ -361,12 +362,30 @@ public class ToggleBehavior {
                         gpuBuffer2 = pipeline.getVertexFormat().uploadImmediateIndexBuffer(meshData.indexBuffer());
                     }
 
-                    try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(Minecraft.getInstance().getMainRenderTarget().getColorTexture(), OptionalInt.empty(), Minecraft.getInstance().getMainRenderTarget().getDepthTexture(), OptionalDouble.empty()))
+					GpuBufferSlice gpubufferslice = RenderSystem.getDynamicUniforms()
+							.writeTransform(RenderSystem.getModelViewMatrix(), new Vector4f(1.0F, 1.0F, 1.0F, 1.0F), new Vector3f(), new Matrix4f(), 0.0F);
+
+					try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
+							() -> "Structure Void Toggle Render Cubes",
+							Minecraft.getInstance().getMainRenderTarget().getColorTextureView(),
+							OptionalInt.empty(),
+							Minecraft.getInstance().getMainRenderTarget().getDepthTextureView(),
+							OptionalDouble.empty()))
 					{
 						renderPass.setPipeline(pipeline);
+						RenderSystem.bindDefaultUniforms(renderPass);
+						GpuBufferSlice gpubufferslice2 = RenderSystem.getProjectionMatrixBuffer();
+						if (gpubufferslice2 != null) {
+							renderPass.setUniform("Projection", gpubufferslice2);
+						}
+						GpuBuffer gpubuffer3 = RenderSystem.getGlobalSettingsUniform();
+						if (gpubuffer3 != null) {
+							renderPass.setUniform("Globals", gpubuffer3);
+						}
+						renderPass.setUniform("DynamicTransforms", gpubufferslice);
 						renderPass.setVertexBuffer(0, gpuBuffer);
 						renderPass.setIndexBuffer(gpuBuffer2, storageIndexBuffer.type());
-						renderPass.drawIndexed(0, meshData.drawState().indexCount());
+						renderPass.drawIndexed(0, 0, meshData.drawState().indexCount(), 1);
 						RenderSystem.lineWidth(1.0F);
 					}
 				}

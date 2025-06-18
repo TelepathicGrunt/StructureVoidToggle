@@ -25,7 +25,7 @@ public class Main {
     }
 
     public static void forceRenderInvisibleBlocks(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_OPAQUE_BLOCKS) {
             ToggleBehavior.forceRenderInvisibleBlocks(event.getCamera(), event.getPoseStack(), event.getLevelRenderer(), false);
         }
     }
