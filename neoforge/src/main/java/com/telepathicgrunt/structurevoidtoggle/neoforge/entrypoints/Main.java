@@ -24,9 +24,7 @@ public class Main {
         event.register(ToggleBehavior.KEY_BIND_STRUCTURE_VOID_FORCED_RENDER_TOGGLE);
     }
 
-    public static void forceRenderInvisibleBlocks(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_OPAQUE_BLOCKS) {
-            ToggleBehavior.forceRenderInvisibleBlocks(event.getCamera(), event.getPoseStack(), event.getLevelRenderer(), false);
-        }
+    public static void forceRenderInvisibleBlocks(RenderLevelStageEvent.AfterOpaqueBlocks event) {
+        ToggleBehavior.forceRenderInvisibleBlocks(event.getCamera(), event.getPoseStack(), event.getLevelRenderer(), false);
     }
 }

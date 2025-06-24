@@ -17,6 +17,6 @@ sourcesUrl="${sources_url}"
 
 [dependencies]
 "${mod_id}" = [
-    { modId = "neoforge", type = "required", versionRange = "*", ordering = "NONE", side = "BOTH" },
+    { modId = "neoforge", type = "required", versionRange = "[21.6.16-beta,)", ordering = "NONE", side = "BOTH" },
     { modId = "minecraft", type = "required", versionRange = "[1.21.5,)", ordering = "NONE", side = "BOTH" },
 ]
