@@ -3,7 +3,6 @@ package com.telepathicgrunt.structurevoidtoggle.behaviors;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -12,17 +11,18 @@ import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.telepathicgrunt.structurevoidtoggle.mixin.client.LevelRendererAccessor;
-import net.minecraft.client.Camera;
+import com.telepathicgrunt.structurevoidtoggle.StructureVoidToggle;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.DynamicUniforms;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -41,7 +41,6 @@ import org.lwjgl.glfw.GLFW;
 import java.util.HashMap;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
-import java.util.function.Consumer;
 
 public class ToggleBehavior {
 	public enum STRUCTURE_BLOCK_MODE {
@@ -69,24 +68,31 @@ public class ToggleBehavior {
 	// The current mode for the structure void block forced rendering for the current client
 	public static boolean FORCED_RENDERING = false;
 
+	public static KeyMapping.Category STRUCTURE_VOID_TOGGLE_KEY_CATEGORY = null;
+
 	// Keybind for switching hitbox modes. 96 is the keycode for backtick `
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_TOGGLE = new KeyMapping(
-			"key.structure_void", GLFW.GLFW_KEY_GRAVE_ACCENT, "key.categories.structure_void_toggle");
+			"key.structure_void", GLFW.GLFW_KEY_GRAVE_ACCENT, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
+	);
 
 	// Keybind for switching render modes. INSERT by default
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE = new KeyMapping(
-			"key.structure_void_render", GLFW.GLFW_KEY_INSERT, "key.categories.structure_void_toggle"
+			"key.structure_void_render", GLFW.GLFW_KEY_INSERT, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
 	);
 
 	// Keybind for forcing structure void rendering
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_FORCED_RENDER_TOGGLE = new KeyMapping(
-			"key.forced_render", GLFW.GLFW_KEY_DELETE, "key.categories.structure_void_toggle"
+			"key.forced_render", GLFW.GLFW_KEY_DELETE, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
 	);
 
 	// Keybind for forcing structure void non-replacing
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_NON_REPLACING_TOGGLE = new KeyMapping(
-			"key.non_replacing", GLFW.GLFW_KEY_PAGE_UP, "key.categories.structure_void_toggle"
+			"key.non_replacing", GLFW.GLFW_KEY_PAGE_UP, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
 	);
+
+	public static void registerKeyMappingCategory() {
+		STRUCTURE_VOID_TOGGLE_KEY_CATEGORY = KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(StructureVoidToggle.MODID, "key.categories.structure_void_toggle"));
+	}
 
 	/**
 	 * Toggles settings for the relevant keypress.
@@ -200,7 +206,7 @@ public class ToggleBehavior {
 	/**
 	 * Switches between forced rendering when DELETE is pressed.
 	 */
-	public static void forceRenderInvisibleBlocks(Camera camera, PoseStack poseStack, LevelRenderer levelRenderer, boolean clearRenderState) {
+	public static void forceRenderInvisibleBlocks(CameraRenderState camera, Frustum frustum, PoseStack poseStack, boolean clearRenderState) {
 		if (FORCED_RENDERING) {
 			Player player = Minecraft.getInstance().player;
 			Level level = player.level();
@@ -218,7 +224,7 @@ public class ToggleBehavior {
 			Vector4d vector4dMax = new Vector4d(maxCorner, maxCorner, maxCorner, 1.0D);
 
 			int radius = 40;
-			Vec3 cameraPos = camera.getPosition();
+			Vec3 cameraPos = camera.pos;
 			BlockPos centerPos = BlockPos.containing(cameraPos);
 			HashMap<ChunkPos, Boolean> chunkAllowedMap = new HashMap<>();
 			BlockPos.MutableBlockPos worldSpot = new BlockPos.MutableBlockPos();
@@ -265,7 +271,7 @@ public class ToggleBehavior {
 							break;
 						}
 
-						if (!((LevelRendererAccessor)levelRenderer).getCullingFrustum().isVisible(new AABB(
+						if (!frustum.isVisible(new AABB(
 								worldSpot.getX() + minCorner,
 								worldSpot.getY() + minCorner,
 								worldSpot.getZ() + minCorner,

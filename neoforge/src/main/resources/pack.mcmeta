@@ -1,7 +1,0 @@
-{
-    "pack": {
-        "description": "structure void toggle resources",
-        "pack_format": 26,
-        "supported_formats": [0, 1000000]
-    }
-}

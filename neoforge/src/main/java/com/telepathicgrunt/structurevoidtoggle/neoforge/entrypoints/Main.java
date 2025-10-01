@@ -25,6 +25,6 @@ public class Main {
     }
 
     public static void forceRenderInvisibleBlocks(RenderLevelStageEvent.AfterOpaqueBlocks event) {
-        ToggleBehavior.forceRenderInvisibleBlocks(event.getCamera(), event.getPoseStack(), event.getLevelRenderer(), false);
+        ToggleBehavior.forceRenderInvisibleBlocks(event.getCamera(), event.getFrustum(), event.getPoseStack(), false);
     }
 }

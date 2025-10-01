@@ -2,6 +2,7 @@ package com.telepathicgrunt.structurevoidtoggle.mixin.client;
 
 import com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior;
 import net.minecraft.client.KeyboardHandler;
+import net.minecraft.client.input.KeyEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,7 +14,7 @@ public class KeyboardMixin {
 
     @Inject(method = "keyPress",
             at = @At(value = "TAIL"))
-    private void keyPress(long window, int key, int scancode, int i, int j, CallbackInfo ci) {
+    private void keyPress(long window, int key, KeyEvent scancode, CallbackInfo ci) {
         ToggleBehavior.toggle(key);
     }
 }
