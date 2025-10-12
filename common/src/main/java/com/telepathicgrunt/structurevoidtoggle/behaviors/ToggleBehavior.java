@@ -14,12 +14,12 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.telepathicgrunt.structurevoidtoggle.StructureVoidToggle;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.DynamicUniforms;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -206,11 +206,8 @@ public class ToggleBehavior {
 	/**
 	 * Switches between forced rendering when DELETE is pressed.
 	 */
-	public static void forceRenderInvisibleBlocks(CameraRenderState camera, Frustum frustum, PoseStack poseStack, boolean clearRenderState) {
+	public static void forceRenderInvisibleBlocks(Level level, Vec3 cameraPos, Frustum frustum, PoseStack poseStack, boolean clearRenderState) {
 		if (FORCED_RENDERING) {
-			Player player = Minecraft.getInstance().player;
-			Level level = player.level();
-
 			double drawRadius;
 			if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
 				drawRadius = 0.4D;
@@ -224,7 +221,6 @@ public class ToggleBehavior {
 			Vector4d vector4dMax = new Vector4d(maxCorner, maxCorner, maxCorner, 1.0D);
 
 			int radius = 40;
-			Vec3 cameraPos = camera.pos;
 			BlockPos centerPos = BlockPos.containing(cameraPos);
 			HashMap<ChunkPos, Boolean> chunkAllowedMap = new HashMap<>();
 			BlockPos.MutableBlockPos worldSpot = new BlockPos.MutableBlockPos();

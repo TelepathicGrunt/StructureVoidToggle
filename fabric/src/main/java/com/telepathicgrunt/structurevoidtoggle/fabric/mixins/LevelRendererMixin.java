@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior;
 import com.telepathicgrunt.structurevoidtoggle.mixin.client.LevelRendererAccessor;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,6 +21,6 @@ public class LevelRendererMixin {
                     ordinal = 0)
     )
     private void structureVoidToggle$renderAfterSolidBlocks(CallbackInfo ci, @Local(ordinal = 0, argsOnly = true) Frustum frustum) {
-        ToggleBehavior.forceRenderInvisibleBlocks(((LevelRendererAccessor)this).getLevelRenderState().cameraRenderState, frustum, new PoseStack(), false);
+        ToggleBehavior.forceRenderInvisibleBlocks(Minecraft.getInstance().player.level(), ((LevelRendererAccessor)this).getLevelRenderState().cameraRenderState.pos, frustum, new PoseStack(), false);
     }
 }
