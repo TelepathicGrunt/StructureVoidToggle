@@ -14,22 +14,24 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.telepathicgrunt.structurevoidtoggle.StructureVoidToggle;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.DynamicUniforms;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.gizmos.Gizmos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
@@ -91,7 +93,7 @@ public class ToggleBehavior {
 	);
 
 	public static void registerKeyMappingCategory() {
-		STRUCTURE_VOID_TOGGLE_KEY_CATEGORY = KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(StructureVoidToggle.MODID, "key.categories.structure_void_toggle"));
+		STRUCTURE_VOID_TOGGLE_KEY_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(StructureVoidToggle.MODID, "key.categories.structure_void_toggle"));
 	}
 
 	/**
@@ -225,18 +227,6 @@ public class ToggleBehavior {
 			HashMap<ChunkPos, Boolean> chunkAllowedMap = new HashMap<>();
 			BlockPos.MutableBlockPos worldSpot = new BlockPos.MutableBlockPos();
 
-			poseStack.pushPose();
-
-			Tesselator tesselator = Tesselator.getInstance();
-			BufferBuilder bufferbuilder;
-			if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
-				bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-            }
-			else {
-				bufferbuilder = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
-            }
-
-            boolean addedVertex = false;
 			int radiusSq = radius * radius;
 			for (int x = -radius; x <= radius; x++) {
 				for (int z = -radius; z <= radius; z++) {
@@ -301,168 +291,47 @@ public class ToggleBehavior {
 								blue = 0;
 							}
 
-							if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
-								float distanceMult = Math.max(1 - ((distSq * 6f) / radiusSq), 0.5f);
 
-								renderQuadBox(
-										bufferbuilder,
-										poseStack.last().pose(),
-										(float) (vector4dMin.x() + worldSpot.getX() - cameraPos.x()),
-										(float) (vector4dMin.y() + worldSpot.getY() - cameraPos.y()),
-										(float) (vector4dMin.z() + worldSpot.getZ() - cameraPos.z()),
-										(float) (vector4dMax.x() + worldSpot.getX() - cameraPos.x()),
-										(float) (vector4dMax.y() + worldSpot.getY() - cameraPos.y()),
-										(float) (vector4dMax.z() + worldSpot.getZ() - cameraPos.z()),
-										(int) (red * distanceMult),
-										(int) (green * distanceMult),
-										(int) (blue * distanceMult),
-										alpha);
+							if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
+                                float distanceMult = Math.max(1 - ((distSq * 6f) / radiusSq), 0.5f);
+                                Gizmos.cuboid(
+                                    new AABB(
+                                        (vector4dMin.x() + worldSpot.getX()),
+                                        (vector4dMin.y() + worldSpot.getY()),
+                                        (vector4dMin.z() + worldSpot.getZ()),
+                                        (vector4dMax.x() + worldSpot.getX()),
+                                        (vector4dMax.y() + worldSpot.getY()),
+                                        (vector4dMax.z() + worldSpot.getZ())
+                                    ),
+                                    GizmoStyle.fill(ARGB.color(
+                                        alpha,
+                                        (int) (red * distanceMult),
+                                        (int) (green * distanceMult),
+                                        (int) (blue * distanceMult)
+                                    )));
                             }
 							else {
-								renderLineBox(
-										bufferbuilder,
-										poseStack.last().pose(),
-										(float) (vector4dMin.x() + worldSpot.getX() - cameraPos.x()),
-										(float) (vector4dMin.y() + worldSpot.getY() - cameraPos.y()),
-										(float) (vector4dMin.z() + worldSpot.getZ() - cameraPos.z()),
-										(float) (vector4dMax.x() + worldSpot.getX() - cameraPos.x()),
-										(float) (vector4dMax.y() + worldSpot.getY() - cameraPos.y()),
-										(float) (vector4dMax.z() + worldSpot.getZ() - cameraPos.z()),
-										red,
-										green,
-										blue,
-										alpha);
+                                float distanceMult = Math.clamp((1 - (distSq * 40) / (float)radiusSq), 0, 1);
+                                Gizmos.cuboid(
+                                    new AABB(
+                                        (vector4dMin.x() + worldSpot.getX()),
+                                        (vector4dMin.y() + worldSpot.getY()),
+                                        (vector4dMin.z() + worldSpot.getZ()),
+                                        (vector4dMax.x() + worldSpot.getX()),
+                                        (vector4dMax.y() + worldSpot.getY()),
+                                        (vector4dMax.z() + worldSpot.getZ())
+                                    ),
+                                    GizmoStyle.stroke(ARGB.color(
+                                        alpha,
+                                        red,
+                                        green,
+                                        blue
+                                    ), 1.5f + (2f * distanceMult)));
                             }
-
-                            addedVertex = true;
                         }
 					}
 				}
 			}
-
-			if (addedVertex) {
-
-				try (MeshData meshData = bufferbuilder.buildOrThrow()) {
-
-					RenderSystem.AutoStorageIndexBuffer storageIndexBuffer = RenderSystem.getSequentialBuffer(meshData.drawState().mode());
-					GpuBuffer gpuBuffer;
-					GpuBuffer gpuBuffer2;
-					RenderPipeline pipeline;
-					GpuBufferSlice[] gpubufferslice;
-
-					if (MODE == STRUCTURE_BLOCK_MODE.FULL_HITBOX) {
-						pipeline = RenderPipelines.DEBUG_QUADS;
-						gpubufferslice = new GpuBufferSlice[1];
-						gpubufferslice[0] = RenderSystem.getDynamicUniforms().writeTransform(RenderSystem.getModelViewMatrix(), new Vector4f(1.0F, 1.0F, 1.0F, 1.0F), new Vector3f(), new Matrix4f(), 0.0F);
-                    }
-					else {
-						pipeline = RenderPipelines.LINES;
-						RenderSystem.lineWidth(1.5F);
-						gpubufferslice = RenderSystem.getDynamicUniforms()
-								.writeTransforms(
-										new DynamicUniforms.Transform(RenderSystem.getModelViewMatrix(), new Vector4f(1.0F, 1.0F, 1.0F, 1.0F), new Vector3f(), new Matrix4f(), 2.0F)
-								);
-                    }
-
-                    gpuBuffer = pipeline.getVertexFormat().uploadImmediateVertexBuffer(meshData.vertexBuffer());
-                    if (meshData.indexBuffer() == null) {
-                        gpuBuffer2 = storageIndexBuffer.getBuffer(meshData.drawState().indexCount());
-                    }
-                    else {
-                        gpuBuffer2 = pipeline.getVertexFormat().uploadImmediateIndexBuffer(meshData.indexBuffer());
-                    }
-
-					try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
-							() -> "Structure Void Toggle Render Cubes",
-							Minecraft.getInstance().getMainRenderTarget().getColorTextureView(),
-							OptionalInt.empty(),
-							Minecraft.getInstance().getMainRenderTarget().getDepthTextureView(),
-							OptionalDouble.empty()))
-					{
-						renderPass.setPipeline(pipeline);
-						RenderSystem.bindDefaultUniforms(renderPass);
-						GpuBufferSlice gpubufferslice2 = RenderSystem.getProjectionMatrixBuffer();
-						if (gpubufferslice2 != null) {
-							renderPass.setUniform("Projection", gpubufferslice2);
-						}
-						GpuBuffer gpubuffer3 = RenderSystem.getGlobalSettingsUniform();
-						if (gpubuffer3 != null) {
-							renderPass.setUniform("Globals", gpubuffer3);
-						}
-						renderPass.setVertexBuffer(0, gpuBuffer);
-						renderPass.setIndexBuffer(gpuBuffer2, storageIndexBuffer.type());
-						renderPass.setUniform("DynamicTransforms", gpubufferslice[0]);
-						renderPass.drawIndexed(0, 0, meshData.drawState().indexCount(), 1);
-						RenderSystem.lineWidth(1.0F);
-					}
-				}
-			}
-
-			poseStack.popPose();
-
-			if (clearRenderState) {
-				RenderType.cutout().clearRenderState();
-			}
 		}
-	}
-
-	private static void renderQuadBox(BufferBuilder builder, Matrix4f pose, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int red, int green, int blue, int alpha) {
-		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, minX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
-		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 1.0F, 0.0F);
-
-		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 1.0F, 0.0F);
-		builder.addVertex(pose, minX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
-		builder.addVertex(pose, minX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, maxX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-
-		builder.addVertex(pose, maxX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 1.0F);
-		builder.addVertex(pose, minX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
-		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-
-		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, minX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, minX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
-		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 1.0F);
-
-		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
-		builder.addVertex(pose, minX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
-		builder.addVertex(pose, minX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 1.0F);
-		builder.addVertex(pose, minX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
-
-		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
-		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 1.0F);
-		builder.addVertex(pose, maxX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
-		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
-	}
-
-	private static void renderLineBox(BufferBuilder builder, Matrix4f pose, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int red, int green, int blue, int alpha) {
-
-		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
-		builder.addVertex(pose, minX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
-		builder.addVertex(pose, minX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
-		builder.addVertex(pose, minX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
-		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
-		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
-		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(-1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, minX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(-1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, minX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
-		builder.addVertex(pose, minX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
-		builder.addVertex(pose, minX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, -1.0F, 0.0F);
-		builder.addVertex(pose, minX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, -1.0F, 0.0F);
-		builder.addVertex(pose, minX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, maxX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, maxX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, -1.0F);
-		builder.addVertex(pose, maxX, minY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, -1.0F);
-		builder.addVertex(pose, minX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(1.0F, 0.0F, 0.0F);
-		builder.addVertex(pose, maxX, minY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
-		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 1.0F, 0.0F);
-		builder.addVertex(pose, maxX, maxY, minZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
-		builder.addVertex(pose, maxX, maxY, maxZ).setColor(red, green, blue, alpha).setNormal(0.0F, 0.0F, 1.0F);
 	}
 }

@@ -4,7 +4,7 @@ import com.telepathicgrunt.structurevoidtoggle.StructureVoidToggle;
 import com.telepathicgrunt.structurevoidtoggle.behaviors.ToggleBehavior;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -14,7 +14,6 @@ import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(value = StructureVoidToggle.MODID, dist = Dist.CLIENT)
@@ -36,10 +35,10 @@ public class Main {
     record ForceRenderInvisibleBlocksState(Frustum frustum, Vec3 cameraPos, ClientLevel clientLevel) {}
 
     private static final ContextKey<ForceRenderInvisibleBlocksState> CONTEXT_KEY =
-            new ContextKey<>(ResourceLocation.fromNamespaceAndPath(StructureVoidToggle.MODID, "force_render_invisible_blocksstate"));
+            new ContextKey<>(Identifier.fromNamespaceAndPath(StructureVoidToggle.MODID, "force_render_invisible_blocksstate"));
 
     public static void forceRenderInvisibleBlocks1(ExtractLevelRenderStateEvent event) {
-        event.getRenderState().setRenderData(CONTEXT_KEY, new ForceRenderInvisibleBlocksState(event.getFrustum(), event.getCamera().getPosition(), event.getLevel()));
+        event.getRenderState().setRenderData(CONTEXT_KEY, new ForceRenderInvisibleBlocksState(event.getFrustum(), event.getCamera().position(), event.getLevel()));
     }
 
     public static void forceRenderInvisibleBlocks2(RenderLevelStageEvent.AfterOpaqueBlocks event) {

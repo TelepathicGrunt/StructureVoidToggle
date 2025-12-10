@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -15,12 +16,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(priority = 1010, value = LevelRenderer.class)
 public class LevelRendererMixin {
 
-    @Inject(method = "method_62214(Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lnet/minecraft/client/renderer/state/LevelRenderState;Lnet/minecraft/util/profiling/ProfilerFiller;Lorg/joml/Matrix4f;Lcom/mojang/blaze3d/resource/ResourceHandle;Lcom/mojang/blaze3d/resource/ResourceHandle;ZLnet/minecraft/client/renderer/culling/Frustum;Lcom/mojang/blaze3d/resource/ResourceHandle;Lcom/mojang/blaze3d/resource/ResourceHandle;)V",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;renderGroup(Lnet/minecraft/client/renderer/chunk/ChunkSectionLayerGroup;)V",
+    @Unique
+    private static Frustum structureVoidToggle$frustum = null;
+
+
+
+    @Inject(method = "addMainPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/culling/Frustum;Lorg/joml/Matrix4f;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;ZLnet/minecraft/client/renderer/state/LevelRenderState;Lnet/minecraft/client/DeltaTracker;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
+            at = @At(value = "HEAD",
                     ordinal = 0)
     )
-    private void structureVoidToggle$renderAfterSolidBlocks(CallbackInfo ci, @Local(ordinal = 0, argsOnly = true) Frustum frustum) {
-        ToggleBehavior.forceRenderInvisibleBlocks(Minecraft.getInstance().player.level(), ((LevelRendererAccessor)this).getLevelRenderState().cameraRenderState.pos, frustum, new PoseStack(), false);
+    private void structureVoidToggle$renderAfterSolidBlocks1(CallbackInfo ci, @Local(ordinal = 0, argsOnly = true) Frustum frustum) {
+        structureVoidToggle$frustum = frustum;
+    }
+
+
+    @Inject(method = "method_62214(Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lnet/minecraft/client/renderer/state/LevelRenderState;Lnet/minecraft/util/profiling/ProfilerFiller;Lorg/joml/Matrix4f;Lcom/mojang/blaze3d/resource/ResourceHandle;Lcom/mojang/blaze3d/resource/ResourceHandle;ZLcom/mojang/blaze3d/resource/ResourceHandle;Lcom/mojang/blaze3d/resource/ResourceHandle;)V",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;renderGroup(Lnet/minecraft/client/renderer/chunk/ChunkSectionLayerGroup;Lcom/mojang/blaze3d/textures/GpuSampler;)V",
+                    ordinal = 0)
+    )
+    private void structureVoidToggle$renderAfterSolidBlocks2(CallbackInfo ci) {
+        if (structureVoidToggle$frustum != null) {
+            ToggleBehavior.forceRenderInvisibleBlocks(Minecraft.getInstance().player.level(), ((LevelRendererAccessor)this).getLevelRenderState().cameraRenderState.pos, structureVoidToggle$frustum, new PoseStack(), false);
+        }
     }
 }
