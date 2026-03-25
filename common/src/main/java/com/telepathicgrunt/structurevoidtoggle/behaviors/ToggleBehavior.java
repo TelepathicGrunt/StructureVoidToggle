@@ -129,25 +129,25 @@ public class ToggleBehavior {
 
 		switch (MODE) {
 			case DEFAULT -> {
-				player.displayClientMessage(Component.translatable("system.structure_void_toggle.default_hitbox"), true);
+				player.sendOverlayMessage(Component.translatable("system.structure_void_toggle.default_hitbox"));
 				StructureVoidBlockShape.STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(5, 5, 5, 11, 11, 11);
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 16, 16, 16));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(-2, -2, -2, -1, -1, -1));
 			}
 			case NO_HITBOX -> {
-				player.displayClientMessage(Component.translatable("system.structure_void_toggle.no_hitbox"), true);
+				player.sendOverlayMessage(Component.translatable("system.structure_void_toggle.no_hitbox"));
 				StructureVoidBlockShape.STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(0, 0, 0, 0, 0, 0);
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 0, 0, 0));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(0, 0, 0, 0, 0, 0));
 			}
 			case SMALL_HITBOX -> {
-				player.displayClientMessage(Component.translatable("system.structure_void_toggle.small_hitbox"), true);
+				player.sendOverlayMessage(Component.translatable("system.structure_void_toggle.small_hitbox"));
 				StructureVoidBlockShape.STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(5, 5, 5, 11, 11, 11);
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(5, 5, 5, 11, 11, 11));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(5, 5, 5, 11, 11, 11));
 			}
 			case FULL_HITBOX -> {
-				player.displayClientMessage(Component.translatable("system.structure_void_toggle.full_hitbox"), true);
+				player.sendOverlayMessage(Component.translatable("system.structure_void_toggle.full_hitbox"));
 				StructureVoidBlockShape.STRUCTURE_VOID_TOGGLE$SHAPE = Block.box(0, 0, 0, 16, 16, 16);
 				((ShapeInterface)(Blocks.BARRIER)).setShape(Block.box(0, 0, 0, 16, 16, 16));
 				((ShapeInterface)(Blocks.LIGHT)).setShape(Block.box(0, 0, 0, 16, 16, 16));
@@ -166,10 +166,10 @@ public class ToggleBehavior {
 		if (player == null) return;
 
 		if (VISIBLE) {
-			player.displayClientMessage(Component.translatable("system.structure_void_toggle.structure_block_visible"), true);
+			player.sendOverlayMessage(Component.translatable("system.structure_void_toggle.structure_block_visible"));
 		}
 		else {
-			player.displayClientMessage(Component.translatable("system.structure_void_toggle.structure_block_invisible"), true);
+			player.sendOverlayMessage(Component.translatable("system.structure_void_toggle.structure_block_invisible"));
 		}
 	}
 
@@ -182,10 +182,10 @@ public class ToggleBehavior {
 		if (player == null) return;
 
 		if (FORCED_RENDERING) {
-			player.displayClientMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_forced_render"), true);
+			player.sendOverlayMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_forced_render"));
 		}
 		else {
-			player.displayClientMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_disabled_forced_render"), true);
+			player.sendOverlayMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_disabled_forced_render"));
 		}
 	}
 
@@ -198,10 +198,10 @@ public class ToggleBehavior {
 		if (player == null) return;
 
 		if (StructureVoidBlockShape.FORCED_NON_REPLACEABLE) {
-			player.displayClientMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_non_replaceable"), true);
+			player.sendOverlayMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_non_replaceable"));
 		}
 		else {
-			player.displayClientMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_replaceable"), true);
+			player.sendOverlayMessage(Component.translatable("system.structure_void_toggle.invisible_blocks_replaceable"));
 		}
 	}
 
@@ -237,10 +237,10 @@ public class ToggleBehavior {
 						}
 
 						worldSpot.set(centerPos.getX() + x, centerPos.getY() + y, centerPos.getZ() + z);
-						ChunkPos chunkPos = new ChunkPos(worldSpot);
+						ChunkPos chunkPos = ChunkPos.containing(worldSpot);
 						boolean isValidChunk = chunkAllowedMap.computeIfAbsent(chunkPos,
 								(c) -> {
-									for(LevelChunkSection levelChunkSection : level.getChunk(chunkPos.x, chunkPos.z).getSections()) {
+									for(LevelChunkSection levelChunkSection : level.getChunk(chunkPos.x(), chunkPos.z()).getSections()) {
 										if (levelChunkSection.getStates().maybeHas((b) ->
 												b.is(Blocks.STRUCTURE_VOID) ||
 												b.is(Blocks.BARRIER) ||
