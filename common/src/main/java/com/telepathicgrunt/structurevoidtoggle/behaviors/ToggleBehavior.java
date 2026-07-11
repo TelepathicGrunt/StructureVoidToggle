@@ -51,6 +51,8 @@ public class ToggleBehavior {
 	// The current mode for the structure void block forced rendering for the current client
 	public static boolean FORCED_RENDERING = false;
 
+	public static int RENDER_RADIUS = 40;
+
 	public static KeyMapping.Category STRUCTURE_VOID_TOGGLE_KEY_CATEGORY = null;
 
 	// Keybind for switching hitbox modes. 96 is the keycode for backtick `
@@ -73,6 +75,14 @@ public class ToggleBehavior {
 			"key.non_replacing", GLFW.GLFW_KEY_PAGE_UP, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
 	);
 
+	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_SHRINK_RADIUS_TOGGLE = new KeyMapping(
+			"key.shrink_radius", GLFW.GLFW_KEY_MINUS, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
+	);
+
+	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_GROW_RADIUS_TOGGLE = new KeyMapping(
+			"key.grow_radius", GLFW.GLFW_KEY_EQUAL, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
+	);
+
 	public static void registerKeyMappingCategory() {
 		STRUCTURE_VOID_TOGGLE_KEY_CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(StructureVoidToggle.MODID, "key.categories.structure_void_toggle"));
 	}
@@ -92,6 +102,12 @@ public class ToggleBehavior {
 		}
 		if (KEY_BIND_STRUCTURE_VOID_NON_REPLACING_TOGGLE.isDown()) {
 			toggleNonReplaceable();
+		}
+		if (KEY_BIND_STRUCTURE_VOID_SHRINK_RADIUS_TOGGLE.isDown()) {
+			RENDER_RADIUS = Math.max(RENDER_RADIUS - 2, 2);
+		}
+		if (KEY_BIND_STRUCTURE_VOID_GROW_RADIUS_TOGGLE.isDown()) {
+			RENDER_RADIUS = Math.min(RENDER_RADIUS + 2, 256);
 		}
 	}
 
@@ -203,7 +219,7 @@ public class ToggleBehavior {
 			Vector4d vector4dMin = new Vector4d(minCorner, minCorner, minCorner, 1.0D);
 			Vector4d vector4dMax = new Vector4d(maxCorner, maxCorner, maxCorner, 1.0D);
 
-			int radius = 40;
+			int radius = RENDER_RADIUS;
 			BlockPos centerPos = BlockPos.containing(cameraPos);
 			HashMap<ChunkPos, Boolean> chunkAllowedMap = new HashMap<>();
 			BlockPos.MutableBlockPos worldSpot = new BlockPos.MutableBlockPos();

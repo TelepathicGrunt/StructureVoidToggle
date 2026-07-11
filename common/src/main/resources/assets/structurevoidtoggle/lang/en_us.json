@@ -4,6 +4,8 @@
   "key.structure_void_render": "Structure Block Disable Render Toggle",
   "key.forced_render": "Invisible Block Forced Render Toggle",
   "key.non_replacing": "Forced Non-Replaceable Toggle",
+  "key.shrink_radius": "Shrink Render Radius Toggle",
+  "key.grow_radius": "Grow Render Radius Toggle",
   "system.structure_void_toggle.default_hitbox": "Bounding Box Toggle: Default bounding boxes set",
   "system.structure_void_toggle.no_hitbox": "Bounding Box Toggle: No hitbox set",
   "system.structure_void_toggle.small_hitbox": "Bounding Box Toggle: Small hitbox set",
