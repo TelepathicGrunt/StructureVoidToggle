@@ -1,5 +1,6 @@
 package com.telepathicgrunt.structurevoidtoggle.behaviors;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.telepathicgrunt.structurevoidtoggle.StructureVoidToggle;
 import net.minecraft.client.KeyMapping;
@@ -21,7 +22,6 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector4d;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
 
@@ -57,30 +57,30 @@ public class ToggleBehavior {
 
 	// Keybind for switching hitbox modes. 96 is the keycode for backtick `
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_TOGGLE = new KeyMapping(
-			"key.structure_void", GLFW.GLFW_KEY_GRAVE_ACCENT, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
+			"key.structure_void", InputConstants.KEY_GRAVE, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
 	);
 
 	// Keybind for switching render modes. INSERT by default
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_RENDER_TOGGLE = new KeyMapping(
-			"key.structure_void_render", GLFW.GLFW_KEY_INSERT, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
+			"key.structure_void_render", InputConstants.KEY_INSERT, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
 	);
 
 	// Keybind for forcing structure void rendering
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_FORCED_RENDER_TOGGLE = new KeyMapping(
-			"key.forced_render", GLFW.GLFW_KEY_DELETE, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
+			"key.forced_render", InputConstants.KEY_DELETE, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
 	);
 
 	// Keybind for forcing structure void non-replacing
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_NON_REPLACING_TOGGLE = new KeyMapping(
-			"key.non_replacing", GLFW.GLFW_KEY_PAGE_UP, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
+			"key.non_replacing", InputConstants.KEY_PAGEUP, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
 	);
 
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_SHRINK_RADIUS_TOGGLE = new KeyMapping(
-			"key.shrink_radius", GLFW.GLFW_KEY_MINUS, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
+			"key.shrink_radius", InputConstants.KEY_MINUS, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
 	);
 
 	public static final KeyMapping KEY_BIND_STRUCTURE_VOID_GROW_RADIUS_TOGGLE = new KeyMapping(
-			"key.grow_radius", GLFW.GLFW_KEY_EQUAL, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
+			"key.grow_radius", InputConstants.KEY_EQUALS, STRUCTURE_VOID_TOGGLE_KEY_CATEGORY
 	);
 
 	public static void registerKeyMappingCategory() {
